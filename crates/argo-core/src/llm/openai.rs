@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     CompletionRequest, CompletionResponse, LlmProvider, MessageContent, Role, StopReason,
-    ToolCallRequest, TokenUsage,
+    TokenUsage,
 };
 use crate::error::LlmError;
 
