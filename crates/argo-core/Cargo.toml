@@ -20,5 +20,6 @@ reqwest.workspace = true
 futures.workspace = true
 toml.workspace = true
 semver.workspace = true
+actix.workspace = true
 argo-memory = { path = "../argo-memory" }
 argo-tools = { path = "../argo-tools" }

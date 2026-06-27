@@ -1,3 +1,4 @@
+use actix::Message;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -61,6 +62,10 @@ pub enum TaskResult {
     Success { output: String },
     Partial { output: String, reason: String },
     Failed { error: AgentError },
+}
+
+impl Message for ExecuteTask {
+    type Result = TaskResult;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
