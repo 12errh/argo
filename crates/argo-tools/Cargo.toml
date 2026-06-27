@@ -16,3 +16,4 @@ uuid.workspace = true
 async-trait.workspace = true
 semver.workspace = true
 reqwest.workspace = true
+url.workspace = true
