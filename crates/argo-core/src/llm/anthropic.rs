@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     CompletionRequest, CompletionResponse, LlmProvider, MessageContent, Role, StopReason,
-    ToolCallRequest, TokenUsage,
+    TokenUsage, ToolCallRequest,
 };
 use crate::error::LlmError;
 
@@ -63,10 +63,7 @@ impl AnthropicProvider {
 
 #[async_trait]
 impl LlmProvider for AnthropicProvider {
-    async fn complete(
-        &self,
-        request: CompletionRequest,
-    ) -> Result<CompletionResponse, LlmError> {
+    async fn complete(&self, request: CompletionRequest) -> Result<CompletionResponse, LlmError> {
         let messages: Vec<AnthropicMessage> = request
             .messages
             .into_iter()
@@ -126,12 +123,13 @@ impl LlmProvider for AnthropicProvider {
             });
         }
 
-        let anthropic_response: AnthropicResponse = response
-            .json()
-            .await
-            .map_err(|e| LlmError::InvalidResponse {
-                reason: e.to_string(),
-            })?;
+        let anthropic_response: AnthropicResponse =
+            response
+                .json()
+                .await
+                .map_err(|e| LlmError::InvalidResponse {
+                    reason: e.to_string(),
+                })?;
 
         let mut content = String::new();
         let mut tool_calls = Vec::new();

@@ -46,7 +46,15 @@ impl Handler<ExecuteTask> for AgentActor {
         let goal = msg.goal;
 
         Box::pin(async move {
-            match execute_task(&goal, llm.as_ref(), tools.as_ref(), memory.as_ref(), &config).await {
+            match execute_task(
+                &goal,
+                llm.as_ref(),
+                tools.as_ref(),
+                memory.as_ref(),
+                &config,
+            )
+            .await
+            {
                 Ok(result) => result,
                 Err(e) => TaskResult::Failed { error: e },
             }

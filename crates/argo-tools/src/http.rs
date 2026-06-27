@@ -101,11 +101,10 @@ impl Tool for HttpTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> Result<Value, ToolError> {
-        let http_input: HttpInput = serde_json::from_value(input).map_err(|e| {
-            ToolError::InvalidInput {
+        let http_input: HttpInput =
+            serde_json::from_value(input).map_err(|e| ToolError::InvalidInput {
                 reason: e.to_string(),
-            }
-        })?;
+            })?;
 
         if !self.is_domain_allowed(&http_input.url) {
             return Err(ToolError::PermissionDenied {
@@ -120,11 +119,7 @@ impl Tool for HttpTool {
                 reason: e.to_string(),
             })?;
 
-        let method = http_input
-            .method
-            .as_deref()
-            .unwrap_or("GET")
-            .to_uppercase();
+        let method = http_input.method.as_deref().unwrap_or("GET").to_uppercase();
 
         let mut request = match method.as_str() {
             "POST" => client.post(&http_input.url),

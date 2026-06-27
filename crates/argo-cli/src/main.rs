@@ -60,11 +60,18 @@ allow_filesystem = true
             std::fs::write("agent.toml", &config_content)?;
             println!("Created agent.toml for '{}'", name);
         }
-        Commands::Run { config, goal, inspect } => {
+        Commands::Run {
+            config,
+            goal,
+            inspect,
+        } => {
             argo_observe::tracing::init_tracing(false, "none", "");
             let config_path = std::path::Path::new(&config);
             let agent_config = argo_core::config::AgentConfig::from_file(config_path)?;
-            println!("Running agent '{}' with goal: {}", agent_config.agent.name, goal);
+            println!(
+                "Running agent '{}' with goal: {}",
+                agent_config.agent.name, goal
+            );
             println!("Config loaded from: {}", config);
             if inspect {
                 println!("Inspect mode enabled");

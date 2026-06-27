@@ -89,7 +89,12 @@ fn resolve_env_vars(input: &str) -> String {
         if let Some(end) = result[start + 2..].find('}') {
             let var_name = &result[start + 2..start + 2 + end];
             if let Ok(value) = std::env::var(var_name) {
-                result = format!("{}{}{}", &result[..start], value, &result[start + 2 + end + 1..]);
+                result = format!(
+                    "{}{}{}",
+                    &result[..start],
+                    value,
+                    &result[start + 2 + end + 1..]
+                );
             } else {
                 break;
             }
@@ -102,22 +107,20 @@ fn resolve_env_vars(input: &str) -> String {
 
 impl AgentConfig {
     pub fn from_file(path: &Path) -> Result<Self, AgentError> {
-        let content = std::fs::read_to_string(path).map_err(|e| {
-            AgentError::Config(format!("Failed to read config file: {}", e))
-        })?;
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| AgentError::Config(format!("Failed to read config file: {}", e)))?;
 
         let resolved = resolve_env_vars(&content);
 
-        let config: AgentConfig = toml::from_str(&resolved).map_err(|e| {
-            AgentError::Config(format!("Failed to parse TOML: {}", e))
-        })?;
+        let config: AgentConfig = toml::from_str(&resolved)
+            .map_err(|e| AgentError::Config(format!("Failed to parse TOML: {}", e)))?;
 
         config.validate()?;
 
         Ok(config)
     }
 
-    fn validate(&self) -> Result<(), AgentError> {
+    pub(crate) fn validate(&self) -> Result<(), AgentError> {
         let valid_providers = ["anthropic", "openai", "gemini", "ollama", "custom"];
         if !valid_providers.contains(&self.model.provider.as_str()) {
             return Err(AgentError::Config(format!(

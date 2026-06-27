@@ -3,9 +3,7 @@ use uuid::Uuid;
 
 use crate::config::AgentConfig;
 use crate::error::AgentError;
-use crate::llm::{
-    CompletionRequest, LlmProvider, Message, MessageContent, Role, ToolDefinition,
-};
+use crate::llm::{CompletionRequest, LlmProvider, Message, MessageContent, Role, ToolDefinition};
 use crate::message::{AgentTrace, LlmCallRecord, TaskResult, ToolCallRecord};
 use argo_memory::handle::MemoryHandle;
 use argo_memory::surreal::TaskRecord;
@@ -153,7 +151,11 @@ pub async fn execute_task(
                 goal: goal.to_string(),
                 outcome: "success".to_string(),
                 summary: response.content.clone(),
-                tools_used: trace.tool_calls.iter().map(|tc| tc.tool_name.clone()).collect(),
+                tools_used: trace
+                    .tool_calls
+                    .iter()
+                    .map(|tc| tc.tool_name.clone())
+                    .collect(),
                 duration_ms: start.elapsed().as_millis() as i64,
                 run_id: run_id.to_string(),
                 started_at: trace.started_at.to_rfc3339(),

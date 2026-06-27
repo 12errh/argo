@@ -73,10 +73,7 @@ impl OpenAiProvider {
 
 #[async_trait]
 impl LlmProvider for OpenAiProvider {
-    async fn complete(
-        &self,
-        request: CompletionRequest,
-    ) -> Result<CompletionResponse, LlmError> {
+    async fn complete(&self, request: CompletionRequest) -> Result<CompletionResponse, LlmError> {
         let mut messages: Vec<OpenAiMessage> = Vec::new();
 
         if let Some(system) = &request.system_prompt {
@@ -141,20 +138,19 @@ impl LlmProvider for OpenAiProvider {
             });
         }
 
-        let openai_response: OpenAiResponse = response
-            .json()
-            .await
-            .map_err(|e| LlmError::InvalidResponse {
-                reason: e.to_string(),
-            })?;
+        let openai_response: OpenAiResponse =
+            response
+                .json()
+                .await
+                .map_err(|e| LlmError::InvalidResponse {
+                    reason: e.to_string(),
+                })?;
 
-        let choice = openai_response
-            .choices
-            .into_iter()
-            .next()
-            .ok_or_else(|| LlmError::InvalidResponse {
+        let choice = openai_response.choices.into_iter().next().ok_or_else(|| {
+            LlmError::InvalidResponse {
                 reason: "No choices in response".to_string(),
-            })?;
+            }
+        })?;
 
         let content = choice.message.content.unwrap_or_default();
 

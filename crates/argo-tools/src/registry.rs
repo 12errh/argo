@@ -28,8 +28,7 @@ impl ToolRegistry {
     pub fn register(&mut self, tool: Arc<dyn Tool>) {
         let name = tool.name().to_string();
         self.tools.insert(name.clone(), tool);
-        self.versions
-            .insert(name, semver::Version::new(0, 1, 0));
+        self.versions.insert(name, semver::Version::new(0, 1, 0));
     }
 
     pub fn unregister(&mut self, name: &str) {
@@ -42,8 +41,7 @@ impl ToolRegistry {
     }
 
     pub fn register_fallbacks(&mut self, tool_name: &str, fallbacks: Vec<String>) {
-        self.fallbacks
-            .insert(tool_name.to_string(), fallbacks);
+        self.fallbacks.insert(tool_name.to_string(), fallbacks);
     }
 
     pub fn get_fallbacks(&self, tool_name: &str) -> Vec<Arc<dyn Tool>> {

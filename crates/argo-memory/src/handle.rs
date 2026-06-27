@@ -116,7 +116,9 @@ impl MemoryHandle {
         to_id: &str,
         rel_type: &str,
     ) -> Result<(), MemoryError> {
-        self.surreal.create_relationship(from_id, to_id, rel_type).await
+        self.surreal
+            .create_relationship(from_id, to_id, rel_type)
+            .await
     }
 
     pub async fn cleanup(&self, agent_id: &str, run_id: &str) -> Result<(), MemoryError> {

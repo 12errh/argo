@@ -16,8 +16,8 @@ pub struct StoredTurn {
 
 impl RedisMemory {
     pub async fn new(url: &str) -> Result<Self, MemoryError> {
-        let client = redis::Client::open(url)
-            .map_err(|e| MemoryError::ConnectionFailed(e.to_string()))?;
+        let client =
+            redis::Client::open(url).map_err(|e| MemoryError::ConnectionFailed(e.to_string()))?;
         Ok(Self { client })
     }
 
@@ -88,8 +88,8 @@ impl RedisMemory {
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::turns_key(agent_id, run_id);
-        let json = serde_json::to_string(turns)
-            .map_err(|e| MemoryError::Serialization(e.to_string()))?;
+        let json =
+            serde_json::to_string(turns).map_err(|e| MemoryError::Serialization(e.to_string()))?;
         let _: () = conn
             .set_ex(&key, json, ttl.as_secs())
             .await
@@ -113,8 +113,9 @@ impl RedisMemory {
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         match result {
-            Some(json) => serde_json::from_str(&json)
-                .map_err(|e| MemoryError::Serialization(e.to_string())),
+            Some(json) => {
+                serde_json::from_str(&json).map_err(|e| MemoryError::Serialization(e.to_string()))
+            }
             None => Ok(Vec::new()),
         }
     }
@@ -195,11 +196,7 @@ impl RedisMemory {
         Ok(result)
     }
 
-    pub async fn cleanup(
-        &self,
-        agent_id: &str,
-        run_id: &str,
-    ) -> Result<(), MemoryError> {
+    pub async fn cleanup(&self, agent_id: &str, run_id: &str) -> Result<(), MemoryError> {
         let mut conn = self
             .client
             .get_multiplexed_async_connection()

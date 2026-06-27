@@ -41,15 +41,13 @@ impl SurrealMemory {
     pub async fn store_task_record(&self, record: &TaskRecord) -> Result<(), MemoryError> {
         tracing::info!(
             "Storing task record: run_id={}, outcome={}",
-            record.run_id, record.outcome
+            record.run_id,
+            record.outcome
         );
         Ok(())
     }
 
-    pub async fn get_task_record(
-        &self,
-        run_id: &str,
-    ) -> Result<Option<TaskRecord>, MemoryError> {
+    pub async fn get_task_record(&self, run_id: &str) -> Result<Option<TaskRecord>, MemoryError> {
         tracing::info!("Retrieving task record: run_id={}", run_id);
         Ok(None)
     }
@@ -57,7 +55,8 @@ impl SurrealMemory {
     pub async fn store_entity(&self, entity: &Entity) -> Result<(), MemoryError> {
         tracing::info!(
             "Storing entity: type={}, identifier={}",
-            entity.entity_type, entity.identifier
+            entity.entity_type,
+            entity.identifier
         );
         Ok(())
     }
@@ -69,7 +68,8 @@ impl SurrealMemory {
     ) -> Result<Option<Entity>, MemoryError> {
         tracing::info!(
             "Retrieving entity: type={}, identifier={}",
-            entity_type, identifier
+            entity_type,
+            identifier
         );
         Ok(None)
     }
@@ -82,7 +82,9 @@ impl SurrealMemory {
     ) -> Result<(), MemoryError> {
         tracing::info!(
             "Creating relationship: {} -> {} ({})",
-            from_id, to_id, rel_type
+            from_id,
+            to_id,
+            rel_type
         );
         Ok(())
     }
@@ -94,7 +96,8 @@ impl SurrealMemory {
     ) -> Result<Vec<Entity>, MemoryError> {
         tracing::info!(
             "Querying relationships: entity_id={}, rel_type={}",
-            entity_id, rel_type
+            entity_id,
+            rel_type
         );
         Ok(Vec::new())
     }

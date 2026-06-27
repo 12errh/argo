@@ -98,19 +98,14 @@ impl Tool for FilesTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> Result<Value, ToolError> {
-        let files_input: FilesInput = serde_json::from_value(input).map_err(|e| {
-            ToolError::InvalidInput {
+        let files_input: FilesInput =
+            serde_json::from_value(input).map_err(|e| ToolError::InvalidInput {
                 reason: e.to_string(),
-            }
-        })?;
+            })?;
 
-        let path = PathBuf::from(
-            files_input
-                .path
-                .ok_or_else(|| ToolError::InvalidInput {
-                    reason: "missing 'path' field".to_string(),
-                })?,
-        );
+        let path = PathBuf::from(files_input.path.ok_or_else(|| ToolError::InvalidInput {
+            reason: "missing 'path' field".to_string(),
+        })?);
 
         if !self.is_path_allowed(&path) {
             return Err(ToolError::PermissionDenied {
@@ -120,11 +115,11 @@ impl Tool for FilesTool {
 
         match files_input.action.as_str() {
             "read" => {
-                let content = tokio::fs::read_to_string(&path)
-                    .await
-                    .map_err(|e| ToolError::ExecutionFailed {
+                let content = tokio::fs::read_to_string(&path).await.map_err(|e| {
+                    ToolError::ExecutionFailed {
                         reason: e.to_string(),
-                    })?;
+                    }
+                })?;
                 Ok(json!({
                     "success": true,
                     "content": content
@@ -133,17 +128,17 @@ impl Tool for FilesTool {
             "write" => {
                 let content = files_input.content.unwrap_or_default();
                 if let Some(parent) = path.parent() {
-                    tokio::fs::create_dir_all(parent)
-                        .await
-                        .map_err(|e| ToolError::ExecutionFailed {
+                    tokio::fs::create_dir_all(parent).await.map_err(|e| {
+                        ToolError::ExecutionFailed {
                             reason: e.to_string(),
-                        })?;
-                }
-                tokio::fs::write(&path, &content)
-                    .await
-                    .map_err(|e| ToolError::ExecutionFailed {
-                        reason: e.to_string(),
+                        }
                     })?;
+                }
+                tokio::fs::write(&path, &content).await.map_err(|e| {
+                    ToolError::ExecutionFailed {
+                        reason: e.to_string(),
+                    }
+                })?;
                 Ok(json!({
                     "success": true,
                     "content": format!("Written {} bytes", content.len())
@@ -151,16 +146,19 @@ impl Tool for FilesTool {
             }
             "list" => {
                 let mut entries = Vec::new();
-                let mut dir = tokio::fs::read_dir(&path)
-                    .await
-                    .map_err(|e| ToolError::ExecutionFailed {
-                        reason: e.to_string(),
-                    })?;
-                while let Some(entry) = dir.next_entry().await.map_err(|e| {
-                    ToolError::ExecutionFailed {
-                        reason: e.to_string(),
-                    }
-                })? {
+                let mut dir =
+                    tokio::fs::read_dir(&path)
+                        .await
+                        .map_err(|e| ToolError::ExecutionFailed {
+                            reason: e.to_string(),
+                        })?;
+                while let Some(entry) =
+                    dir.next_entry()
+                        .await
+                        .map_err(|e| ToolError::ExecutionFailed {
+                            reason: e.to_string(),
+                        })?
+                {
                     entries.push(entry.file_name().to_string_lossy().to_string());
                 }
                 Ok(json!({
