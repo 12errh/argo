@@ -12,4 +12,6 @@ pub enum MemoryError {
     ConnectionFailed(String),
     #[error("Key not found: {0}")]
     KeyNotFound(String),
+    #[error("Qdrant error: {0}")]
+    Qdrant(String),
 }

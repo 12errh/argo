@@ -46,6 +46,12 @@ pub enum AgentError {
     #[error("Goal unachievable: {reason}")]
     GoalUnachievable { reason: String },
 
+    #[error("Plan invalid: {plan} — {reason}")]
+    PlanInvalid { plan: String, reason: String },
+
+    #[error("Tool {name} produced invalid output: {output}")]
+    ToolOutputInvalid { name: String, output: String },
+
     #[error("Memory store {store} unavailable: {reason}")]
     MemoryUnavailable { store: String, reason: String },
 

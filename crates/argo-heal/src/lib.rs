@@ -1,9 +1,11 @@
-//! Argo Heal — Self-healing engine with error taxonomy and recovery strategies.
+pub mod classifier;
+pub mod engine;
+pub mod postmortem;
+pub mod strategy;
+pub mod types;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+pub use classifier::ErrorClassifier;
+pub use engine::HealEngine;
+pub use postmortem::PostMortem;
+pub use strategy::HealStrategy;
+pub use types::{ErrorSeverity, HealContext, HealResult, HealStep, Lesson};

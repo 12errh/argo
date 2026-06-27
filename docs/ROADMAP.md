@@ -1,57 +1,66 @@
 # Argo Roadmap
 
-## Current Phase: Phase 0 — Planning
+## Completed Phases
 
+### Phase 0 — Planning (Completed)
 **Duration:** 4–6 weeks
-**Status:** In Progress
-
-### Milestones
 
 - [x] Master plan and specification
 - [x] Implementation plan
 - [x] 12 Architecture RFCs
 - [x] 6 Data Schema documents
-- [ ] GitHub repository setup
 - [x] CI/CD pipeline
 - [x] Contributing guidelines
 - [x] Decision log
 
+### Phase 1 — Rust Core Engine (Completed)
+**Duration:** 8–10 weeks
+
+- [x] Actor engine with Actix
+- [x] LLM provider trait with Anthropic and OpenAI adapters
+- [x] Basic agent execution loop
+- [x] Redis and SurrealDB memory layers
+- [x] Built-in tools (bash, files, http)
+- [x] Basic observability
+- [x] TOML config parser
+- [x] Tool registry with fallbacks
+
+### Phase 2 — Heal Loop & Full Memory (Completed)
+**Duration:** 6–8 weeks
+
+- [x] Error taxonomy and classification (20 variants, severity mapping)
+- [x] 7 heal strategies (retry, reframe, swap_tool, decompose, spawn_subagent, change_provider, reduce_scope)
+- [x] HealEngine with strategy chain and ordering
+- [x] Post-mortem loop for lesson generation
+- [x] Qdrant semantic memory (4 collections: experiences, errors, lessons, tool_patterns)
+- [x] Embedding pipeline (OpenAI, Ollama, Mock adapters)
+- [x] Experience retrieval pipeline
+- [x] Context overflow handler
+- [x] Typed AgentTrace (HealStepRecord, LessonRecord, MemoryOpRecord)
+- [x] 49 unit tests passing
+
 ## Upcoming Phases
 
-### Phase 1 — Rust Core Engine (8–10 weeks)
-- Actor engine with Actix
-- LLM provider trait with Anthropic and OpenAI adapters
-- Basic agent execution loop
-- Redis and SurrealDB memory layers
-- Built-in tools (bash, files, http)
-- Basic observability
-
-### Phase 2 — Heal Loop & Full Memory (6–8 weeks)
-- Error taxonomy and classification
-- 7 heal strategies
-- Post-mortem loop
-- Qdrant semantic memory
-- Embedding pipeline
-- Experience retrieval
-
 ### Phase 3 — SDKs & CLI (8 weeks)
-- CLI with all commands
+- CLI with all commands (init, run, loop, inspect, memory, stats, eval, validate, tools, mcp, package)
 - Python SDK via PyO3
 - TypeScript SDK via napi-rs
 - Feature parity test suite
 
 ### Phase 4 — Multi-Agent & MCP (6 weeks)
 - Orchestrator actor
-- AgentPool
+- AgentPool with task distribution
 - LoopAgent with self-scoring
 - Full MCP protocol connector
-- Additional tools (web, browser, git, python)
+- Additional tools (web, browser, git, python, code)
 
 ### Phase 5 — Evolution & Production Polish (6 weeks)
 - Daily growth cycle
-- Evolution tracking
-- Eval system
-- Full documentation
+- Evolution tracking (argo stats)
+- Eval system (argo eval)
+- Full documentation (14 guides)
+- Example agents
+- Docker Compose and Kubernetes deployment
 - v1.0.0 release
 
 ## Contributing

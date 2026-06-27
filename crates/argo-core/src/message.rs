@@ -116,6 +116,39 @@ pub struct LlmCallRecord {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealStepRecord {
+    pub id: Uuid,
+    pub error: AgentError,
+    pub strategy_name: String,
+    pub started_at: chrono::DateTime<chrono::Utc>,
+    pub ended_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub success: bool,
+    pub output: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LessonRecord {
+    pub id: Uuid,
+    pub error_type: String,
+    pub context_summary: String,
+    pub root_cause: String,
+    pub resolution: String,
+    pub prevention: String,
+    pub confidence: f32,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryOpRecord {
+    pub op_id: Uuid,
+    pub store: String,
+    pub operation: String,
+    pub key: String,
+    pub success: bool,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentTrace {
     pub run_id: Uuid,
     pub agent_name: String,
@@ -129,7 +162,8 @@ pub struct AgentTrace {
     pub quality_score: Option<f32>,
     pub tool_calls: Vec<ToolCallRecord>,
     pub llm_calls: Vec<LlmCallRecord>,
-    pub heal_steps: Vec<serde_json::Value>,
-    pub lessons: Vec<serde_json::Value>,
+    pub heal_steps: Vec<HealStepRecord>,
+    pub lessons: Vec<LessonRecord>,
+    pub memory_ops: Vec<MemoryOpRecord>,
     pub errors: Vec<AgentError>,
 }

@@ -37,6 +37,7 @@ pub async fn execute_task(
         llm_calls: Vec::new(),
         heal_steps: Vec::new(),
         lessons: Vec::new(),
+        memory_ops: Vec::new(),
         errors: Vec::new(),
     };
 
