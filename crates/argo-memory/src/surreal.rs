@@ -24,8 +24,11 @@ pub struct Entity {
 }
 
 pub struct SurrealMemory {
+    #[allow(dead_code)]
     namespace: String,
+    #[allow(dead_code)]
     database: String,
+    #[allow(dead_code)]
     endpoint: String,
 }
 

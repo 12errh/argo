@@ -157,7 +157,7 @@ impl Tool for HttpTool {
         Ok(json!({
             "status": status,
             "body": body_text,
-            "success": status >= 200 && status < 300
+            "success": (200..300).contains(&status)
         }))
     }
 }

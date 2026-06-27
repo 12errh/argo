@@ -130,7 +130,7 @@ impl AgentConfig {
         }
 
         if let Some(temp) = self.model.temperature {
-            if temp < 0.0 || temp > 2.0 {
+            if !(0.0..=2.0).contains(&temp) {
                 return Err(AgentError::Config(format!(
                     "Temperature must be between 0.0 and 2.0, got {}",
                     temp
@@ -148,7 +148,7 @@ impl AgentConfig {
 
         if let Some(quality) = &self.quality {
             if let Some(threshold) = quality.threshold {
-                if threshold < 0.0 || threshold > 1.0 {
+                if !(0.0..=1.0).contains(&threshold) {
                     return Err(AgentError::Config(format!(
                         "Quality threshold must be between 0.0 and 1.0, got {}",
                         threshold
