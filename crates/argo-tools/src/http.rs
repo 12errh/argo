@@ -3,7 +3,6 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::time::Duration;
-use url;
 
 use crate::error::ToolError;
 use crate::trait_def::{Tool, ToolContext, ToolPermissions};
