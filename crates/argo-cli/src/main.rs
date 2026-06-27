@@ -36,7 +36,11 @@ fn main() -> anyhow::Result<()> {
             println!("Initializing agent project: {}", name);
             // TODO: Create my-agent.toml, .gitignore, README.md
         }
-        Commands::Run { config, goal, inspect } => {
+        Commands::Run {
+            config,
+            goal,
+            inspect,
+        } => {
             println!("Running agent from {} with goal: {}", config, goal);
             if inspect {
                 println!("Live inspection enabled");

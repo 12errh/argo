@@ -3,7 +3,7 @@
 **The first agent framework where agents genuinely get better over time.**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/argo-agents/argo/actions/workflows/ci.yml/badge.svg)](https://github.com/argo-agents/argo/actions/workflows/ci.yml)
+[![CI](https://github.com/12errh/argo/actions/workflows/ci.yml/badge.svg)](https://github.com/12errh/argo/actions/workflows/ci.yml)
 
 Argo is a multi-language agent framework with a Rust core. It enables developers to build:
 
