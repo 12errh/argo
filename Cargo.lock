@@ -198,6 +198,8 @@ name = "argo-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "argo-memory",
+ "argo-tools",
  "async-trait",
  "chrono",
  "futures",
@@ -283,6 +285,7 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tracing",
+ "url",
  "uuid",
 ]
 

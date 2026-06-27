@@ -2,5 +2,6 @@
 
 pub mod config;
 pub mod error;
+pub mod execution;
 pub mod llm;
 pub mod message;
