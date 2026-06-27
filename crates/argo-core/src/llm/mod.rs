@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::LlmError;
 
+pub mod anthropic;
+pub mod openai;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompletionRequest {
     pub messages: Vec<Message>,
