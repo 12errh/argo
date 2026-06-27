@@ -46,12 +46,12 @@ impl RedisMemory {
     ) -> Result<(), MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::context_key(agent_id, run_id);
         let _: () = conn
-            .set_ex(&key, context, ttl.as_secs() as usize)
+            .set_ex(&key, context, ttl.as_secs())
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         Ok(())
@@ -64,7 +64,7 @@ impl RedisMemory {
     ) -> Result<Option<String>, MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::context_key(agent_id, run_id);
@@ -84,14 +84,14 @@ impl RedisMemory {
     ) -> Result<(), MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::turns_key(agent_id, run_id);
         let json = serde_json::to_string(turns)
             .map_err(|e| MemoryError::Serialization(e.to_string()))?;
         let _: () = conn
-            .set_ex(&key, json, ttl.as_secs() as usize)
+            .set_ex(&key, json, ttl.as_secs())
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         Ok(())
@@ -104,7 +104,7 @@ impl RedisMemory {
     ) -> Result<Vec<StoredTurn>, MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::turns_key(agent_id, run_id);
@@ -128,12 +128,12 @@ impl RedisMemory {
     ) -> Result<(), MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::scratch_key(agent_id, run_id);
         let _: () = conn
-            .set_ex(&key, data, ttl.as_secs() as usize)
+            .set_ex(&key, data, ttl.as_secs())
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         Ok(())
@@ -146,7 +146,7 @@ impl RedisMemory {
     ) -> Result<Option<String>, MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::scratch_key(agent_id, run_id);
@@ -166,12 +166,12 @@ impl RedisMemory {
     ) -> Result<(), MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::plan_key(agent_id, run_id);
         let _: () = conn
-            .set_ex(&key, plan, ttl.as_secs() as usize)
+            .set_ex(&key, plan, ttl.as_secs())
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         Ok(())
@@ -184,7 +184,7 @@ impl RedisMemory {
     ) -> Result<Option<String>, MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         let key = Self::plan_key(agent_id, run_id);
@@ -202,7 +202,7 @@ impl RedisMemory {
     ) -> Result<(), MemoryError> {
         let mut conn = self
             .client
-            .get_async_connection()
+            .get_multiplexed_async_connection()
             .await
             .map_err(|e| MemoryError::Redis(e.to_string()))?;
         for key in [
