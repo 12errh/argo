@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/argo-core",
+    "crates/argo-memory",
+    "crates/argo-heal",
+    "crates/argo-tools",
+    "crates/argo-mcp",
+    "crates/argo-observe",
+    "crates/argo-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/argo-agents/argo"
+description = "The first agent framework where agents genuinely get better over time"
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }

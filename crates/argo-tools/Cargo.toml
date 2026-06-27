@@ -1,0 +1,15 @@
+[package]
+name = "argo-tools"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Built-in tool library for Argo agents"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+async-trait = "0.1"

@@ -1,0 +1,15 @@
+[package]
+name = "argo-heal"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Self-healing engine with error taxonomy and recovery strategies"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+async-trait = "0.1"

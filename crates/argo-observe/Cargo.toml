@@ -1,0 +1,15 @@
+[package]
+name = "argo-observe"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "OpenTelemetry observability for Argo"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+opentelemetry = "0.23"
+opentelemetry_sdk = { version = "0.23", features = ["rt-tokio"] }
+opentelemetry-otlp = "0.16"

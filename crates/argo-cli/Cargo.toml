@@ -1,0 +1,23 @@
+[package]
+name = "argo-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CLI for Argo agent framework"
+
+[[bin]]
+name = "argo"
+path = "src/main.rs"
+
+[dependencies]
+argo-core = { path = "../argo-core" }
+argo-memory = { path = "../argo-memory" }
+argo-heal = { path = "../argo-heal" }
+argo-tools = { path = "../argo-tools" }
+argo-mcp = { path = "../argo-mcp" }
+argo-observe = { path = "../argo-observe" }
+tokio.workspace = true
+anyhow.workspace = true
+clap = { version = "4", features = ["derive"] }
+tracing.workspace = true
+tracing-subscriber.workspace = true

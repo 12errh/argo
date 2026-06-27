@@ -1,0 +1,8 @@
+# Default owners for everything in the repo
+* @argo-agents/core-team
+
+# RFCs require architect review
+docs/rfcs/ @argo-agents/architects
+
+# CI/CD changes require DevOps review
+.github/ @argo-agents/devops
