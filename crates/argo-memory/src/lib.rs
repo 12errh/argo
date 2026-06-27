@@ -1,4 +1,7 @@
 pub mod error;
+pub mod handle;
+
 pub mod redis;
 pub mod surreal;
-pub mod handle;
+#[cfg(test)]
+pub mod tests;

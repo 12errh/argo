@@ -6,3 +6,6 @@ pub mod error;
 pub mod execution;
 pub mod llm;
 pub mod message;
+
+#[cfg(test)]
+pub mod tests;
