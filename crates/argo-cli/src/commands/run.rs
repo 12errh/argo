@@ -84,10 +84,7 @@ pub async fn execute(
     let redis_url = config
         .memory
         .as_ref()
-        .and_then(|_m| {
-            // MemorySection doesn't have redis field in current schema, use default
-            None::<String>
-        })
+        .and(None::<String>)
         .unwrap_or_else(|| "redis://localhost:6379".to_string());
 
     let surreal_endpoint = "ws://localhost:8000";

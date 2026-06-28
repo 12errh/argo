@@ -217,8 +217,7 @@ impl LoopAgent {
             .await
             .map_err(|e| napi::Error::from_reason(e.to_string()))?;
 
-            match task_result {
-                argo_core::message::TaskResult::Success { output } => {
+            if let argo_core::message::TaskResult::Success { output } = task_result {
                     let score = util::estimate_quality(&output);
                     if score > best_score {
                         best_score = score;
@@ -229,8 +228,6 @@ impl LoopAgent {
                         break;
                     }
                 }
-                _ => {}
-            }
         }
 
         Ok(serde_json::json!({

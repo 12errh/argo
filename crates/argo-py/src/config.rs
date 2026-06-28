@@ -10,6 +10,7 @@ pub struct AgentConfig {
 impl AgentConfig {
     /// Create a config from a TOML file.
     #[staticmethod]
+    #[allow(clippy::useless_conversion)]
     fn from_file(path: &str) -> PyResult<Self> {
         let config_path = std::path::Path::new(path);
         let inner = argo_core::config::AgentConfig::from_file(config_path)
@@ -33,11 +34,5 @@ impl AgentConfig {
     #[getter]
     fn model_name(&self) -> &str {
         &self.inner.model.model
-    }
-}
-
-impl AgentConfig {
-    pub fn inner(&self) -> &argo_core::config::AgentConfig {
-        &self.inner
     }
 }

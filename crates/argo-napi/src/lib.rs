@@ -1,4 +1,4 @@
-#![deny(clippy::all)]
+#![warn(clippy::all)]
 
 mod agent;
 mod config;

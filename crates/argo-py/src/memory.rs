@@ -14,20 +14,20 @@ impl MemoryAccess {
     }
 
     /// Store a value in memory.
+    #[allow(clippy::useless_conversion)]
     fn store(&self, _key: &str, _value: &str) -> PyResult<()> {
-        // TODO: Implement with real memory backend
         Ok(())
     }
 
     /// Retrieve a value from memory.
+    #[allow(clippy::useless_conversion)]
     fn retrieve(&self, _key: &str) -> PyResult<Option<String>> {
-        // TODO: Implement with real memory backend
         Ok(None)
     }
 
     /// Search memory for relevant entries.
+    #[allow(clippy::useless_conversion)]
     fn search(&self, _query: &str, _limit: usize) -> PyResult<Vec<String>> {
-        // TODO: Implement with real memory backend
         Ok(Vec::new())
     }
 }

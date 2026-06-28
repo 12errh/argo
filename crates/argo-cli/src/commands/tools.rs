@@ -16,8 +16,8 @@ pub fn execute(cmd: ToolsCommands) -> anyhow::Result<()> {
         ToolsCommands::List => {
             println!("Available Tools");
             println!();
-            println!("{:<15} {:<50} {}", "Name", "Description", "Version");
-            println!("{:<15} {:<50} {}", "----", "-----------", "-------");
+            println!("{:<15} {:<50} Version", "Name", "Description");
+            println!("{:<15} {:<50} -------", "----", "-----------");
 
             let tools = vec![
                 ("bash", "Execute shell commands with sandboxing", "0.1.0"),

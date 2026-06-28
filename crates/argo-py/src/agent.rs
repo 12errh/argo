@@ -68,6 +68,7 @@ impl Agent {
     }
 
     #[staticmethod]
+    #[allow(clippy::useless_conversion)]
     fn from_config(path: &str) -> PyResult<Self> {
         let config_path = std::path::Path::new(path);
         let config = argo_core::config::AgentConfig::from_file(config_path)
@@ -75,6 +76,7 @@ impl Agent {
         Ok(Self { config })
     }
 
+    #[allow(clippy::useless_conversion)]
     fn run<'py>(&self, py: Python<'py>, goal: &str) -> PyResult<Bound<'py, PyDict>> {
         let rt = tokio::runtime::Runtime::new()
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
@@ -155,6 +157,7 @@ pub struct LoopAgent {
 impl LoopAgent {
     #[new]
     #[pyo3(signature = (name, model, provider, api_key, threshold=0.85, max_iterations=20, tools=None, memory_mode="persistent"))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         name: &str,
         model: &str,
@@ -218,6 +221,7 @@ impl LoopAgent {
         }
     }
 
+    #[allow(clippy::useless_conversion)]
     fn run<'py>(&self, py: Python<'py>, goal: &str) -> PyResult<Bound<'py, PyDict>> {
         let rt = tokio::runtime::Runtime::new()
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
@@ -245,19 +249,16 @@ impl LoopAgent {
                 )
                 .await;
 
-                match task_result {
-                    Ok(argo_core::message::TaskResult::Success { output }) => {
-                        let score = util::estimate_quality(&output);
-                        if score > best_score {
-                            best_score = score;
-                            best_output = output;
-                        }
-                        if score >= threshold {
-                            final_iteration = iteration;
-                            break;
-                        }
+                if let Ok(argo_core::message::TaskResult::Success { output }) = task_result {
+                    let score = util::estimate_quality(&output);
+                    if score > best_score {
+                        best_score = score;
+                        best_output = output;
                     }
-                    _ => {}
+                    if score >= threshold {
+                        final_iteration = iteration;
+                        break;
+                    }
                 }
             }
 
