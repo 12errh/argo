@@ -1,7 +1,17 @@
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
+
+mod commands;
+
+use commands::{init, inspect, loop_cmd, mcp, memory, package, run, stats, tools, validate};
 
 #[derive(Parser)]
-#[command(name = "argo", about = "Argo Agent Framework CLI")]
+#[command(
+    name = "argo",
+    about = "Argo Agent Framework CLI — build self-healing, self-improving agents",
+    version,
+    long_about = "Argo is the first agent framework where agents genuinely get better over time.\nEvery error makes them smarter. Every task builds experience."
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -13,21 +23,103 @@ enum Commands {
     Init {
         /// Agent name
         name: String,
+        /// Directory to initialize in (default: current directory)
+        #[arg(short, long)]
+        dir: Option<PathBuf>,
     },
-    /// Run an agent
+
+    /// Run an agent with a goal
     Run {
         /// Path to agent config file
-        config: String,
-        /// Task goal
+        #[arg(short, long, default_value = "agent.toml")]
+        config: PathBuf,
+        /// Task goal for the agent
         goal: String,
         /// Show live heal trace
         #[arg(long)]
         inspect: bool,
+        /// Environment profile to use
+        #[arg(short, long)]
+        env: Option<String>,
     },
-    /// Validate a config file
+
+    /// Run a loop agent until quality threshold is met
+    Loop {
+        /// Path to agent config file (must include [quality] section)
+        #[arg(short, long, default_value = "agent.toml")]
+        config: PathBuf,
+        /// Show live heal trace
+        #[arg(long)]
+        inspect: bool,
+    },
+
+    /// Inspect a completed or running agent run
+    Inspect {
+        /// Run ID to inspect
+        run_id: String,
+        /// Show full trace details
+        #[arg(long)]
+        trace: bool,
+        /// Show heal steps
+        #[arg(long)]
+        heal: bool,
+        /// Show lessons learned
+        #[arg(long)]
+        lessons: bool,
+    },
+
+    /// Manage agent memory
+    #[command(subcommand)]
+    Memory(memory::MemoryCommands),
+
+    /// View agent performance statistics
+    Stats {
+        /// Agent name to filter by
+        #[arg(short, long)]
+        agent: Option<String>,
+        /// Time range (e.g., "24h", "7d", "30d")
+        #[arg(short, long, default_value = "24h")]
+        range: String,
+        /// Compare with another agent
+        #[arg(long)]
+        compare: Option<String>,
+    },
+
+    /// Evaluate agent against scenario files
+    Eval {
+        /// Path to scenario file or directory
+        scenario: PathBuf,
+        /// Path to agent config
+        #[arg(short, long, default_value = "agent.toml")]
+        config: PathBuf,
+        /// Output report format (json, text)
+        #[arg(long, default_value = "text")]
+        format: String,
+    },
+
+    /// Validate an agent config file
     Validate {
         /// Path to agent config file
-        config: String,
+        #[arg(default_value = "agent.toml")]
+        config: PathBuf,
+    },
+
+    /// List or inspect available tools
+    #[command(subcommand)]
+    Tools(tools::ToolsCommands),
+
+    /// Manage MCP server connections
+    #[command(subcommand)]
+    Mcp(mcp::McpCommands),
+
+    /// Build and package agent for distribution
+    Package {
+        /// Path to agent config
+        #[arg(short, long, default_value = "agent.toml")]
+        config: PathBuf,
+        /// Output directory for packaged agent
+        #[arg(short, long, default_value = "./dist")]
+        output: PathBuf,
     },
 }
 
@@ -36,58 +128,43 @@ async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init { name } => {
-            let config_content = format!(
-                r#"[agent]
-name = "{}"
-version = "0.1.0"
-description = "Agent: {}"
-
-[model]
-provider = "anthropic"
-model = "claude-sonnet-4-6"
-api_key = "${{ANTHROPIC_API_KEY}}"
-
-[tools]
-enabled = ["bash", "files"]
-
-[permissions]
-allow_network = false
-allow_filesystem = true
-"#,
-                name, name
-            );
-            std::fs::write("agent.toml", &config_content)?;
-            println!("Created agent.toml for '{}'", name);
-        }
+        Commands::Init { name, dir } => init::execute(&name, dir.as_deref()),
         Commands::Run {
             config,
             goal,
             inspect,
+            env,
+        } => run::execute(&config, &goal, inspect, env.as_deref()).await,
+        Commands::Loop { config, inspect } => loop_cmd::execute(&config, inspect).await,
+        Commands::Inspect {
+            run_id,
+            trace,
+            heal,
+            lessons,
+        } => inspect::execute(&run_id, trace, heal, lessons).await,
+        Commands::Memory(cmd) => memory::execute(cmd).await,
+        Commands::Stats {
+            agent,
+            range,
+            compare,
+        } => stats::execute(agent.as_deref(), &range, compare.as_deref()).await,
+        Commands::Eval {
+            scenario,
+            config,
+            format,
         } => {
-            argo_observe::tracing::init_tracing(false, "none", "");
-            let config_path = std::path::Path::new(&config);
-            let agent_config = argo_core::config::AgentConfig::from_file(config_path)?;
             println!(
-                "Running agent '{}' with goal: {}",
-                agent_config.agent.name, goal
+                "Evaluating agent '{}' against scenario: {}",
+                config.display(),
+                scenario.display()
             );
-            println!("Config loaded from: {}", config);
-            if inspect {
-                println!("Inspect mode enabled");
-            }
+            println!("Output format: {}", format);
+            println!("Eval system will be available in Phase 5.");
+            Ok(())
         }
-        Commands::Validate { config } => {
-            let config_path = std::path::Path::new(&config);
-            match argo_core::config::AgentConfig::from_file(config_path) {
-                Ok(_) => println!("Config '{}' is valid", config),
-                Err(e) => {
-                    eprintln!("Config validation failed: {}", e);
-                    std::process::exit(1);
-                }
-            }
-        }
+        Commands::Validate { config } => validate::execute(&config),
+        Commands::Tools(cmd) => tools::execute(cmd),
+        Commands::Mcp(cmd) => mcp::execute(cmd).await,
+        Commands::Package { config, output } => package::execute(&config, &output),
     }
-
-    Ok(())
 }

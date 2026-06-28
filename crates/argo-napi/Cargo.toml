@@ -1,0 +1,29 @@
+[package]
+name = "argo-napi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TypeScript/Node.js SDK for Argo Agent Framework (via napi-rs)"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+argo-core = { path = "../argo-core" }
+argo-memory = { path = "../argo-memory" }
+argo-tools = { path = "../argo-tools" }
+argo-heal = { path = "../argo-heal" }
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+
+[dependencies.napi]
+version = "2"
+features = ["async", "tokio_rt", "serde-json"]
+
+[dependencies.napi-derive]
+version = "2"
+
+[build-dependencies]
+napi-build = "2"

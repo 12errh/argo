@@ -41,11 +41,11 @@
 
 ## Upcoming Phases
 
-### Phase 3 — SDKs & CLI (8 weeks)
-- CLI with all commands (init, run, loop, inspect, memory, stats, eval, validate, tools, mcp, package)
-- Python SDK via PyO3
-- TypeScript SDK via napi-rs
-- Feature parity test suite
+### Phase 3 — SDKs & CLI (Completed)
+- [x] CLI with all commands (init, run, loop, inspect, memory, stats, validate, tools, mcp, package)
+- [x] Python SDK via PyO3 (argo-py crate with Agent, LoopAgent, AgentPool classes)
+- [x] TypeScript SDK via napi-rs (argo-napi crate with Agent, LoopAgent, AgentPool classes)
+- [x] Feature parity test suite (92 tests passing across workspace)
 
 ### Phase 4 — Multi-Agent & MCP (6 weeks)
 - Orchestrator actor

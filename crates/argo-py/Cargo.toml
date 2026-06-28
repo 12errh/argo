@@ -1,25 +1,26 @@
 [package]
-name = "argo-cli"
+name = "argo-py"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "CLI for Argo agent framework"
+description = "Python SDK for Argo Agent Framework (via PyO3)"
 
-[[bin]]
-name = "argo"
-path = "src/main.rs"
+[lib]
+name = "argo_agents"
+crate-type = ["cdylib"]
 
 [dependencies]
 argo-core = { path = "../argo-core" }
 argo-memory = { path = "../argo-memory" }
 argo-tools = { path = "../argo-tools" }
-argo-observe = { path = "../argo-observe" }
+argo-heal = { path = "../argo-heal" }
 tokio.workspace = true
-anyhow.workspace = true
-clap = { version = "4", features = ["derive"] }
-tracing.workspace = true
-tracing-subscriber.workspace = true
-serde_json.workspace = true
 serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
 uuid.workspace = true
 chrono.workspace = true
+
+[dependencies.pyo3]
+version = "0.22"
+features = ["extension-module"]

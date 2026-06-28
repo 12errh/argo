@@ -8,6 +8,8 @@ members = [
     "crates/argo-mcp",
     "crates/argo-observe",
     "crates/argo-cli",
+    "crates/argo-py",
+    "crates/argo-napi",
 ]
 
 [workspace.package]
