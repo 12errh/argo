@@ -247,6 +247,7 @@ dependencies = [
  "argo-memory",
  "argo-observe",
  "argo-tools",
+ "async-trait",
  "chrono",
  "clap",
  "dotenvy",
