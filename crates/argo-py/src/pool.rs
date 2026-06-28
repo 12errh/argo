@@ -27,9 +27,7 @@ impl AgentPool {
     #[allow(clippy::useless_conversion)]
     fn run(&self, goal: &str) -> PyResult<String> {
         if self.configs.is_empty() {
-            return Err(pyo3::exceptions::PyValueError::new_err(
-                "No agents in pool",
-            ));
+            return Err(pyo3::exceptions::PyValueError::new_err("No agents in pool"));
         }
 
         let rt = tokio::runtime::Runtime::new()
@@ -41,24 +39,19 @@ impl AgentPool {
             let tool_registry = util::create_tool_registry(&config.tools.enabled, config)?;
             let memory = util::create_memory(config).await?;
 
-            argo_core::execution::execute_task(
-                goal,
-                llm.as_ref(),
-                &tool_registry,
-                &memory,
-                config,
-            )
-            .await
-            .map_err(|e| anyhow::anyhow!(e))
+            argo_core::execution::execute_task(goal, llm.as_ref(), &tool_registry, &memory, config)
+                .await
+                .map_err(|e| anyhow::anyhow!(e))
         });
 
         match result {
             Ok(argo_core::message::TaskResult::Success { output }) => {
                 Ok(serde_json::json!({"success": true, "output": output}).to_string())
             }
-            Ok(argo_core::message::TaskResult::Partial { output, reason }) => {
-                Ok(serde_json::json!({"success": false, "output": output, "reason": reason}).to_string())
-            }
+            Ok(argo_core::message::TaskResult::Partial { output, reason }) => Ok(
+                serde_json::json!({"success": false, "output": output, "reason": reason})
+                    .to_string(),
+            ),
             Ok(argo_core::message::TaskResult::Failed { error }) => {
                 Ok(serde_json::json!({"success": false, "error": error.to_string()}).to_string())
             }

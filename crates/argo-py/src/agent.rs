@@ -97,7 +97,7 @@ impl Agent {
             .map_err(|e| anyhow::anyhow!(e))
         });
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         match result {
             Ok(argo_core::message::TaskResult::Success { output }) => {
                 dict.set_item("success", true)?;
@@ -268,7 +268,7 @@ impl LoopAgent {
         let (output, score, iterations) =
             result.map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("output", output)?;
         dict.set_item("score", score)?;
         dict.set_item("iterations", iterations)?;

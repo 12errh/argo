@@ -218,16 +218,16 @@ impl LoopAgent {
             .map_err(|e| napi::Error::from_reason(e.to_string()))?;
 
             if let argo_core::message::TaskResult::Success { output } = task_result {
-                    let score = util::estimate_quality(&output);
-                    if score > best_score {
-                        best_score = score;
-                        best_output = output;
-                    }
-                    if score >= self.threshold {
-                        final_iteration = iteration;
-                        break;
-                    }
+                let score = util::estimate_quality(&output);
+                if score > best_score {
+                    best_score = score;
+                    best_output = output;
                 }
+                if score >= self.threshold {
+                    final_iteration = iteration;
+                    break;
+                }
+            }
         }
 
         Ok(serde_json::json!({
