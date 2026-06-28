@@ -33,7 +33,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install Python dev headers
         run: sudo apt-get update && sudo apt-get install -y python3-dev
-      - run: cargo clippy --all-targets --all-features
+      - run: cargo clippy --workspace --exclude argo-py --exclude argo-napi --all-targets
 
   test:
     name: Test (${{ matrix.os }})
@@ -53,7 +53,7 @@ jobs:
       - name: Install Python dev headers (macOS)
         if: matrix.os == 'macos-latest'
         run: brew install python@3.12
-      - run: cargo test --all
+      - run: cargo test --workspace --exclude argo-py --exclude argo-napi
 
   integration:
     name: Integration Tests

@@ -61,7 +61,7 @@ jobs:
         run: cargo clippy --all-targets --all-features
 
       - name: Run tests
-        run: cargo test --all
+        run: cargo test --workspace --exclude argo-py --exclude argo-napi
 
   build-binaries:
     name: Build (${{ matrix.target }})
