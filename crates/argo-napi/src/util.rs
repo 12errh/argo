@@ -106,6 +106,7 @@ pub(crate) fn build_config(
             provider: provider.to_string(),
             model: model.to_string(),
             api_key: Some(api_key.to_string()),
+            base_url: None,
             temperature: None,
             max_tokens: None,
             context_strategy: None,

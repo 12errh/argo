@@ -4,9 +4,10 @@ version = "1.0.0"
 description = "Production coding agent with self-healing and test execution"
 
 [model]
-provider = "anthropic"
-model = "claude-sonnet-4-6"
-api_key = "${ANTHROPIC_API_KEY}"
+provider = "openai"
+model = "mimo-v2.5-free"
+api_key = "${OPENCODE_API_KEY}"
+base_url = "https://opencode.ai/zen/v1"
 temperature = 0.2
 max_tokens = 8192
 context_strategy = "summarize"

@@ -75,6 +75,23 @@ pub async fn execute(
                     max_exec_time,
                 )));
             }
+            "git" => {
+                tool_registry.register(Arc::new(argo_tools::git_tool::GitTool::new()));
+            }
+            "code" => {
+                tool_registry.register(Arc::new(argo_tools::code::CodeTool::new()));
+            }
+            "python" => {
+                tool_registry.register(Arc::new(argo_tools::python_tool::PythonTool::new()));
+            }
+            "web_search" => {
+                tool_registry.register(Arc::new(argo_tools::web_search::WebSearchTool::new(
+                    None,
+                )));
+            }
+            "browser" => {
+                tool_registry.register(Arc::new(argo_tools::browser::BrowserTool::default_headless()));
+            }
             _ => {
                 eprintln!("Warning: unknown tool '{}', skipping", tool_name);
             }
@@ -136,16 +153,23 @@ fn create_provider(
     config: &argo_core::config::AgentConfig,
 ) -> anyhow::Result<Arc<dyn argo_core::llm::LlmProvider>> {
     let api_key = config.model.api_key.as_deref().unwrap_or("");
+    let base_url = config.model.base_url.clone();
 
     match config.model.provider.as_str() {
         "anthropic" => Ok(Arc::new(argo_core::llm::anthropic::AnthropicProvider::new(
             api_key.to_string(),
             config.model.model.clone(),
         ))),
-        "openai" => Ok(Arc::new(argo_core::llm::openai::OpenAiProvider::new(
-            api_key.to_string(),
-            config.model.model.clone(),
-        ))),
+        "openai" => {
+            let mut provider = argo_core::llm::openai::OpenAiProvider::new(
+                api_key.to_string(),
+                config.model.model.clone(),
+            );
+            if let Some(url) = base_url {
+                provider = provider.with_base_url(url);
+            }
+            Ok(Arc::new(provider))
+        }
         _ => anyhow::bail!(
             "Provider '{}' is not yet supported for CLI run",
             config.model.provider
@@ -169,6 +193,7 @@ mod tests {
                 provider: "anthropic".to_string(),
                 model: "claude-sonnet-4-6".to_string(),
                 api_key: Some("${TEST_KEY}".to_string()),
+                base_url: None,
                 temperature: None,
                 max_tokens: None,
                 context_strategy: None,
@@ -204,6 +229,7 @@ mod tests {
                 provider: "gemini".to_string(),
                 model: "gemini-pro".to_string(),
                 api_key: Some("key".to_string()),
+                base_url: None,
                 temperature: None,
                 max_tokens: None,
                 context_strategy: None,

@@ -1,0 +1,47 @@
+{
+  "name": "argo-framework",
+  "version": "0.1.0",
+  "description": "The first agent framework where agents genuinely get better over time",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "scripts": {
+    "build": "napi build --release",
+    "build:debug": "napi build",
+    "prepublishOnly": "napi prepublish -t npm",
+    "universal": "napi universal",
+    "version": "napi version"
+  },
+  "napi": {
+    "name": "argo-sdk",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-apple-darwin",
+        "aarch64-apple-darwin",
+        "x86_64-pc-windows-msvc"
+      ]
+    }
+  },
+  "keywords": [
+    "agent",
+    "ai",
+    "llm",
+    "self-healing",
+    "rust",
+    "napi"
+  ],
+  "author": "Argo Agents",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/argo-agents/argo"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

@@ -55,6 +55,58 @@ jobs:
         run: brew install python@3.12
       - run: cargo test --all
 
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      surrealdb:
+        image: surrealdb/surrealdb:latest
+        ports:
+          - 8000:8000
+        env:
+          SURREAL_USER: root
+          SURREAL_PASS: test
+          SURREAL_LOG: warn
+        options: >-
+          --health-cmd "curl -f http://localhost:8000/ || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports:
+          - 6333:6333
+          - 6334:6334
+        options: >-
+          --health-cmd "bash -c '</dev/tcp/localhost/6333'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install Python dev headers
+        run: sudo apt-get update && sudo apt-get install -y python3-dev
+      - name: Run integration tests
+        env:
+          REDIS_URL: redis://localhost:6379
+          SURREAL_URL: http://localhost:8000
+          SURREAL_NS: test
+          SURREAL_DB: test
+          QDRANT_URL: http://localhost:6333
+        run: cargo test --test integration_tests -- --test-threads=1
+
   build:
     name: Build (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
@@ -95,17 +147,37 @@ jobs:
         if: matrix.archive == 'tar.gz'
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../argo-${{ matrix.target }}.tar.gz argo
+          tar czf ../../../argo-framework-${{ matrix.target }}.tar.gz argo
           cd ../../..
+
       - name: Package (windows)
         if: matrix.archive == 'zip'
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          7z a ../../../argo-${{ matrix.target }}.zip argo.exe
+          7z a ../../../argo-framework-${{ matrix.target }}.zip argo.exe
           cd ../../..
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: argo-${{ matrix.target }}
-          path: argo-${{ matrix.target }}.${{ matrix.archive }}
+          name: argo-framework-${{ matrix.target }}
+          path: argo-framework-${{ matrix.target }}.${{ matrix.archive }}
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile
+          push: false
+          tags: argo-agent:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -17,7 +17,7 @@ version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/argo-agents/argo"
-description = "The first agent framework where agents genuinely get better over time"
+description = "The first agent framework where agents genuinely get better over time — self-healing, self-improving AI agents in Rust"
 
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }

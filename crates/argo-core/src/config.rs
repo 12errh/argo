@@ -27,6 +27,7 @@ pub struct ModelSection {
     pub provider: String,
     pub model: String,
     pub api_key: Option<String>,
+    pub base_url: Option<String>,
     pub temperature: Option<f32>,
     pub max_tokens: Option<usize>,
     pub context_strategy: Option<String>,
