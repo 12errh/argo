@@ -79,29 +79,26 @@ jobs:
           SURREAL_PASS: test
           SURREAL_LOG: warn
           SURREAL_PATH: memory
-        options: >-
-          --health-cmd "bash -c '</dev/tcp/localhost/8000' || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --health-start-period 15s
       qdrant:
         image: qdrant/qdrant:latest
         ports:
           - 6333:6333
           - 6334:6334
-        options: >-
-          --health-cmd "wget -qO- http://localhost:6333/healthz || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --health-start-period 15s
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Install Python dev headers
         run: sudo apt-get update && sudo apt-get install -y python3-dev
+      - name: Wait for services
+        run: |
+          echo "Waiting for Redis..."
+          for i in $(seq 1 30); do redis-cli -h localhost -p 6379 ping && break || sleep 2; done
+          echo "Waiting for SurrealDB..."
+          for i in $(seq 1 30); do curl -sf http://localhost:8000/healthz > /dev/null 2>&1 && break || sleep 2; done
+          echo "Waiting for Qdrant..."
+          for i in $(seq 1 30); do curl -sf http://localhost:6333/healthz > /dev/null 2>&1 && break || sleep 2; done
+          echo "All services ready"
       - name: Run integration tests
         env:
           REDIS_URL: redis://localhost:6379
