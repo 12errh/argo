@@ -1,0 +1,23 @@
+name = "research-comparison"
+goal = "Compare two popular JavaScript frameworks (React vs Vue) with pros, cons, and a recommendation"
+expected_outcome = "Structured comparison with clear recommendation"
+
+[[scoring_criteria]]
+name = "accuracy"
+weight = 0.40
+description = "Information is accurate and up-to-date"
+
+[[scoring_criteria]]
+name = "completeness"
+weight = 0.30
+description = "Covers performance, ecosystem, learning curve, and use cases"
+
+[[scoring_criteria]]
+name = "clarity"
+weight = 0.20
+description = "Well-organized with clear sections and summary"
+
+[[scoring_criteria]]
+name = "citations"
+weight = 0.10
+description = "References official documentation or reputable sources"

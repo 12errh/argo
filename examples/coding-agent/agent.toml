@@ -1,0 +1,70 @@
+[agent]
+name = "coding-agent"
+version = "1.0.0"
+description = "Production coding agent with self-healing and test execution"
+
+[model]
+provider = "anthropic"
+model = "claude-sonnet-4-6"
+api_key = "${ANTHROPIC_API_KEY}"
+temperature = 0.2
+max_tokens = 8192
+context_strategy = "summarize"
+
+[memory]
+mode = "persistent"
+short_term_ttl = 3600
+long_term_backend = "surrealdb"
+vector_backend = "qdrant"
+embedding_model = "text-embedding-3-small"
+
+[heal]
+enabled = true
+max_attempts = 7
+strategies = [
+    "retry",
+    "reframe",
+    "swap_tool",
+    "decompose",
+    "spawn_subagent",
+    "change_provider",
+    "reduce_scope",
+]
+background = true
+
+[quality]
+threshold = 0.85
+max_iterations = 15
+
+[[quality.criteria]]
+name = "tests_pass"
+weight = 0.40
+description = "All unit tests run and pass with zero failures"
+
+[[quality.criteria]]
+name = "code_quality"
+weight = 0.30
+description = "Code follows best practices, no obvious code smells, proper error handling"
+
+[[quality.criteria]]
+name = "documentation"
+weight = 0.20
+description = "README exists and covers setup, usage, and API"
+
+[[quality.criteria]]
+name = "error_handling"
+weight = 0.10
+description = "Functions handle edge cases and return meaningful errors"
+
+[tools]
+enabled = ["bash", "files", "git", "code"]
+
+[permissions]
+allow_network = false
+allow_filesystem = true
+allowed_paths = ["./workspace", "/tmp", "."]
+max_execution_time = 300
+
+[observe]
+enabled = false
+backend = "none"

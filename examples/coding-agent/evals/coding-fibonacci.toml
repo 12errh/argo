@@ -1,0 +1,23 @@
+name = "coding-fibonacci"
+goal = "Write a Python function that computes the nth Fibonacci number, with unit tests"
+expected_outcome = "Function works correctly with tests passing"
+
+[[scoring_criteria]]
+name = "correctness"
+weight = 0.40
+description = "Function produces correct Fibonacci numbers for n=0,1,2,5,10"
+
+[[scoring_criteria]]
+name = "tests"
+weight = 0.30
+description = "At least 3 test cases covering normal, edge, and error cases"
+
+[[scoring_criteria]]
+name = "documentation"
+weight = 0.20
+description = "Function has docstring explaining parameters and return value"
+
+[[scoring_criteria]]
+name = "style"
+weight = 0.10
+description = "Code follows PEP 8 style conventions"

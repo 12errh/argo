@@ -1,3 +1,4 @@
+pub mod eval;
 pub mod init;
 pub mod inspect;
 pub mod loop_cmd;

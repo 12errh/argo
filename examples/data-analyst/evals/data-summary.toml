@@ -1,0 +1,23 @@
+name = "data-summary"
+goal = "Analyze a CSV file with sales data and produce a statistical summary with key metrics"
+expected_outcome = "Report with mean, median, trends, and top performers"
+
+[[scoring_criteria]]
+name = "data_quality"
+weight = 0.35
+description = "Handles missing values and edge cases correctly"
+
+[[scoring_criteria]]
+name = "insights"
+weight = 0.30
+description = "Identifies top performers, trends, and anomalies"
+
+[[scoring_criteria]]
+name = "metrics"
+weight = 0.20
+description = "Calculates mean, median, min, max correctly"
+
+[[scoring_criteria]]
+name = "presentation"
+weight = 0.15
+description = "Results are clearly formatted and easy to read"

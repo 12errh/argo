@@ -1,0 +1,67 @@
+[agent]
+name = "research-agent"
+version = "1.0.0"
+description = "Web research agent with persistent memory and source tracking"
+
+[model]
+provider = "anthropic"
+model = "claude-sonnet-4-6"
+api_key = "${ANTHROPIC_API_KEY}"
+temperature = 0.4
+max_tokens = 8192
+context_strategy = "summarize"
+
+[memory]
+mode = "persistent"
+short_term_ttl = 7200
+long_term_backend = "surrealdb"
+vector_backend = "qdrant"
+embedding_model = "text-embedding-3-small"
+
+[heal]
+enabled = true
+max_attempts = 5
+strategies = [
+    "retry",
+    "reframe",
+    "swap_tool",
+    "reduce_scope",
+]
+background = true
+
+[quality]
+threshold = 0.80
+max_iterations = 10
+
+[[quality.criteria]]
+name = "accuracy"
+weight = 0.40
+description = "Information is accurate and sourced from reliable references"
+
+[[quality.criteria]]
+name = "completeness"
+weight = 0.30
+description = "Topic is thoroughly covered with key details"
+
+[[quality.criteria]]
+name = "clarity"
+weight = 0.20
+description = "Writing is clear, well-organized, and accessible"
+
+[[quality.criteria]]
+name = "citations"
+weight = 0.10
+description = "Sources are properly cited and verifiable"
+
+[tools]
+enabled = ["web_search", "browser", "files", "http"]
+
+[permissions]
+allow_network = true
+allow_filesystem = true
+allowed_paths = ["./workspace", "/tmp"]
+max_execution_time = 600
+
+[observe]
+enabled = false
+backend = "none"

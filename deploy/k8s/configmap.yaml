@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-agent-config
+  namespace: argo-system
+  labels:
+    app.kubernetes.io/name: argo
+    app.kubernetes.io/component: agent
+data:
+  agent.toml: |
+    [agent]
+    name = "argo-agent"
+    version = "1.0.0"
+    description = "Production Argo agent"
+
+    [model]
+    provider = "anthropic"
+    model = "claude-sonnet-4-6"
+    api_key = "${ANTHROPIC_API_KEY}"
+    temperature = 0.3
+    max_tokens = 8192
+
+    [memory]
+    mode = "persistent"
+    short_term_ttl = 3600
+    long_term_backend = "surrealdb"
+    vector_backend = "qdrant"
+
+    [heal]
+    enabled = true
+    max_attempts = 7
+    strategies = ["retry", "reframe", "swap_tool", "decompose", "spawn_subagent", "change_provider", "reduce_scope"]
+    background = true
+
+    [quality]
+    threshold = 0.85
+    max_iterations = 15
+
+    [[quality.criteria]]
+    name = "correctness"
+    weight = 0.5
+    description = "Output is correct and complete"
+
+    [[quality.criteria]]
+    name = "quality"
+    weight = 0.5
+    description = "Output meets quality standards"
+
+    [tools]
+    enabled = ["bash", "files", "git"]
+
+    [permissions]
+    allow_network = false
+    allow_filesystem = true
+    allowed_paths = ["/workspace", "/tmp"]
+    max_execution_time = 300
+
+    [observe]
+    enabled = true
+    backend = "otlp"
+    endpoint = "http://otel-collector:4317"

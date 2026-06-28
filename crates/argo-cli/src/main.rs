@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 mod commands;
 
-use commands::{init, inspect, loop_cmd, mcp, memory, package, run, stats, tools, validate};
+use commands::{eval, init, inspect, loop_cmd, mcp, memory, package, run, stats, tools, validate};
 
 #[derive(Parser)]
 #[command(
@@ -152,16 +152,7 @@ async fn main() -> anyhow::Result<()> {
             scenario,
             config,
             format,
-        } => {
-            println!(
-                "Evaluating agent '{}' against scenario: {}",
-                config.display(),
-                scenario.display()
-            );
-            println!("Output format: {}", format);
-            println!("Eval system will be available in Phase 5.");
-            Ok(())
-        }
+        } => eval::execute(&scenario, &config, &format).await,
         Commands::Validate { config } => validate::execute(&config),
         Commands::Tools(cmd) => tools::execute(cmd),
         Commands::Mcp(cmd) => mcp::execute(cmd).await,

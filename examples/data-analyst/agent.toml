@@ -1,0 +1,68 @@
+[agent]
+name = "data-analyst"
+version = "1.0.0"
+description = "Data analysis agent for processing, visualizing, and reporting on datasets"
+
+[model]
+provider = "anthropic"
+model = "claude-sonnet-4-6"
+api_key = "${ANTHROPIC_API_KEY}"
+temperature = 0.3
+max_tokens = 8192
+context_strategy = "summarize"
+
+[memory]
+mode = "persistent"
+short_term_ttl = 3600
+long_term_backend = "surrealdb"
+vector_backend = "qdrant"
+embedding_model = "text-embedding-3-small"
+
+[heal]
+enabled = true
+max_attempts = 5
+strategies = [
+    "retry",
+    "reframe",
+    "swap_tool",
+    "decompose",
+    "reduce_scope",
+]
+background = true
+
+[quality]
+threshold = 0.80
+max_iterations = 12
+
+[[quality.criteria]]
+name = "data_quality"
+weight = 0.35
+description = "Analysis handles missing data, outliers, and edge cases correctly"
+
+[[quality.criteria]]
+name = "insights"
+weight = 0.30
+description = "Key insights are identified and clearly communicated"
+
+[[quality.criteria]]
+name = "visualizations"
+weight = 0.20
+description = "Charts and visualizations are clear, labeled, and appropriate"
+
+[[quality.criteria]]
+name = "reproducibility"
+weight = 0.15
+description = "Analysis can be reproduced with the same input data"
+
+[tools]
+enabled = ["bash", "python", "files", "code"]
+
+[permissions]
+allow_network = false
+allow_filesystem = true
+allowed_paths = ["./workspace", "/tmp", "."]
+max_execution_time = 300
+
+[observe]
+enabled = false
+backend = "none"
