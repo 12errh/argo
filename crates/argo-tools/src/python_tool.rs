@@ -71,17 +71,15 @@ impl Tool for PythonTool {
     }
 
     async fn execute(&self, input: Value, ctx: &ToolContext) -> Result<Value, ToolError> {
-        let code = input
-            .get("code")
-            .and_then(|c| c.as_str())
-            .ok_or_else(|| ToolError::InvalidInput {
-                reason: "Missing 'code' parameter".to_string(),
-            })?;
+        let code =
+            input
+                .get("code")
+                .and_then(|c| c.as_str())
+                .ok_or_else(|| ToolError::InvalidInput {
+                    reason: "Missing 'code' parameter".to_string(),
+                })?;
 
-        let timeout_secs = input
-            .get("timeout")
-            .and_then(|t| t.as_u64())
-            .unwrap_or(30);
+        let timeout_secs = input.get("timeout").and_then(|t| t.as_u64()).unwrap_or(30);
 
         let output = tokio::time::timeout(
             Duration::from_secs(timeout_secs),

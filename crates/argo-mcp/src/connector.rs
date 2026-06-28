@@ -12,8 +12,8 @@ use crate::types::{
     CallToolParams, ClientInfo, InitializeParams, JsonRpcRequest, JsonRpcResponse, McpTool,
     McpToolResult,
 };
-use argo_tools::trait_def::{Tool, ToolContext, ToolPermissions};
 use argo_tools::error::ToolError;
+use argo_tools::trait_def::{Tool, ToolContext, ToolPermissions};
 
 pub struct McpConnector {
     server_url: String,
@@ -61,13 +61,13 @@ impl McpConnector {
 
         {
             let mut auth = self.auth.lock().await;
-            if let Some(auth_header) = auth
-                .get_auth_header()
-                .await
-                .map_err(|e| McpError::ConnectionFailed {
-                    server: self.server_url.clone(),
-                    reason: e.to_string(),
-                })?
+            if let Some(auth_header) =
+                auth.get_auth_header()
+                    .await
+                    .map_err(|e| McpError::ConnectionFailed {
+                        server: self.server_url.clone(),
+                        reason: e.to_string(),
+                    })?
             {
                 headers.insert(
                     "Authorization",
@@ -105,11 +105,9 @@ impl McpConnector {
             });
         }
 
-        response_body
-            .result
-            .ok_or_else(|| McpError::ProtocolError {
-                reason: "No result in response".to_string(),
-            })
+        response_body.result.ok_or_else(|| McpError::ProtocolError {
+            reason: "No result in response".to_string(),
+        })
     }
 
     pub async fn connect(&self) -> Result<(), McpError> {

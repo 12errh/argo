@@ -67,12 +67,10 @@ impl AgentSpawner {
             crate::message::TaskResult::Partial { output, reason } => {
                 Ok(format!("[partial: {}] {}", reason, output))
             }
-            crate::message::TaskResult::Failed { error } => {
-                Err(AgentError::SubAgentFailed {
-                    agent_id: child_id,
-                    error: Box::new(error),
-                })
-            }
+            crate::message::TaskResult::Failed { error } => Err(AgentError::SubAgentFailed {
+                agent_id: child_id,
+                error: Box::new(error),
+            }),
         }
     }
 

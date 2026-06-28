@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use std::time::Duration;
 
 use crate::error::MemoryError;
@@ -11,12 +12,14 @@ pub enum MemoryMode {
     Persistent,
 }
 
-impl MemoryMode {
-    pub fn from_str(s: &str) -> Self {
+impl FromStr for MemoryMode {
+    type Err = MemoryError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "shared" => MemoryMode::Shared,
-            "isolated" => MemoryMode::Isolated,
-            _ => MemoryMode::Persistent,
+            "shared" => Ok(MemoryMode::Shared),
+            "isolated" => Ok(MemoryMode::Isolated),
+            _ => Ok(MemoryMode::Persistent),
         }
     }
 }
@@ -38,7 +41,12 @@ impl MemoryHandle {
         }
     }
 
-    pub fn with_mode(redis: RedisMemory, surreal: SurrealMemory, mode: MemoryMode, agent_id: &str) -> Self {
+    pub fn with_mode(
+        redis: RedisMemory,
+        surreal: SurrealMemory,
+        mode: MemoryMode,
+        agent_id: &str,
+    ) -> Self {
         Self {
             redis,
             surreal,
@@ -63,9 +71,10 @@ impl MemoryHandle {
         match self.mode {
             MemoryMode::Shared => "shared".to_string(),
             MemoryMode::Isolated => caller_agent_id.to_string(),
-            MemoryMode::Persistent => {
-                self.agent_id.clone().unwrap_or_else(|| caller_agent_id.to_string())
-            }
+            MemoryMode::Persistent => self
+                .agent_id
+                .clone()
+                .unwrap_or_else(|| caller_agent_id.to_string()),
         }
     }
 

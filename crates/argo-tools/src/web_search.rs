@@ -86,12 +86,13 @@ impl Tool for WebSearchTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> Result<Value, ToolError> {
-        let query = input
-            .get("query")
-            .and_then(|q| q.as_str())
-            .ok_or_else(|| ToolError::InvalidInput {
-                reason: "Missing 'query' parameter".to_string(),
-            })?;
+        let query =
+            input
+                .get("query")
+                .and_then(|q| q.as_str())
+                .ok_or_else(|| ToolError::InvalidInput {
+                    reason: "Missing 'query' parameter".to_string(),
+                })?;
 
         let num_results = input
             .get("num_results")
@@ -115,9 +116,13 @@ impl Tool for WebSearchTool {
                 reason: format!("Search request failed: {}", e),
             })?;
 
-        let body: serde_json::Value = response.json().await.map_err(|e| ToolError::ExecutionFailed {
-            reason: format!("Failed to parse search response: {}", e),
-        })?;
+        let body: serde_json::Value =
+            response
+                .json()
+                .await
+                .map_err(|e| ToolError::ExecutionFailed {
+                    reason: format!("Failed to parse search response: {}", e),
+                })?;
 
         let results = body
             .get("web")

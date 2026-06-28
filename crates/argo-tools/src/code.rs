@@ -87,12 +87,13 @@ impl Tool for CodeTool {
                 reason: "Missing 'action' parameter".to_string(),
             })?;
 
-        let path = input
-            .get("path")
-            .and_then(|p| p.as_str())
-            .ok_or_else(|| ToolError::InvalidInput {
-                reason: "Missing 'path' parameter".to_string(),
-            })?;
+        let path =
+            input
+                .get("path")
+                .and_then(|p| p.as_str())
+                .ok_or_else(|| ToolError::InvalidInput {
+                    reason: "Missing 'path' parameter".to_string(),
+                })?;
 
         let full_path = if Path::new(path).is_absolute() {
             path.to_string()
@@ -110,18 +111,18 @@ impl Tool for CodeTool {
                     })?;
 
                 if let Some(parent) = Path::new(&full_path).parent() {
-                    tokio::fs::create_dir_all(parent)
-                        .await
-                        .map_err(|e| ToolError::ExecutionFailed {
+                    tokio::fs::create_dir_all(parent).await.map_err(|e| {
+                        ToolError::ExecutionFailed {
                             reason: format!("Failed to create directory: {}", e),
-                        })?;
+                        }
+                    })?;
                 }
 
-                tokio::fs::write(&full_path, content)
-                    .await
-                    .map_err(|e| ToolError::ExecutionFailed {
+                tokio::fs::write(&full_path, content).await.map_err(|e| {
+                    ToolError::ExecutionFailed {
                         reason: format!("Failed to write file: {}", e),
-                    })?;
+                    }
+                })?;
 
                 Ok(json!({
                     "success": true,
@@ -130,11 +131,11 @@ impl Tool for CodeTool {
                 }))
             }
             "read" => {
-                let content = tokio::fs::read_to_string(&full_path)
-                    .await
-                    .map_err(|e| ToolError::ExecutionFailed {
+                let content = tokio::fs::read_to_string(&full_path).await.map_err(|e| {
+                    ToolError::ExecutionFailed {
                         reason: format!("Failed to read file: {}", e),
-                    })?;
+                    }
+                })?;
 
                 Ok(json!({
                     "success": true,
@@ -166,7 +167,7 @@ impl Tool for CodeTool {
                     "rust" => {
                         let binary = full_path.trim_end_matches(".rs");
                         tokio::process::Command::new("rustc")
-                            .args(&[&full_path, "-o", binary])
+                            .args([full_path.as_str(), "-o", binary])
                             .current_dir(&ctx.working_dir)
                             .output()
                             .await

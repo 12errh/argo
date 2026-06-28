@@ -126,24 +126,16 @@ impl Tool for GitTool {
                     .unwrap_or("main");
                 run_git_command(&["push", "origin", branch], &ctx.working_dir).await?
             }
-            "diff" => {
-                run_git_command(&["diff"], &ctx.working_dir).await?
-            }
+            "diff" => run_git_command(&["diff"], &ctx.working_dir).await?,
             "branch" => {
-                let branch_name = input
-                    .get("branch")
-                    .and_then(|b| b.as_str());
+                let branch_name = input.get("branch").and_then(|b| b.as_str());
                 match branch_name {
                     Some(name) => run_git_command(&["branch", name], &ctx.working_dir).await?,
                     None => run_git_command(&["branch", "-a"], &ctx.working_dir).await?,
                 }
             }
-            "status" => {
-                run_git_command(&["status"], &ctx.working_dir).await?
-            }
-            "log" => {
-                run_git_command(&["log", "--oneline", "-20"], &ctx.working_dir).await?
-            }
+            "status" => run_git_command(&["status"], &ctx.working_dir).await?,
+            "log" => run_git_command(&["log", "--oneline", "-20"], &ctx.working_dir).await?,
             "add" => {
                 let files = input
                     .get("files")

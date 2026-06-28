@@ -85,12 +85,11 @@ impl Tool for BrowserTool {
 
         match action {
             "navigate" => {
-                let url = input
-                    .get("url")
-                    .and_then(|u| u.as_str())
-                    .ok_or_else(|| ToolError::InvalidInput {
+                let url = input.get("url").and_then(|u| u.as_str()).ok_or_else(|| {
+                    ToolError::InvalidInput {
                         reason: "Missing 'url' parameter for navigate action".to_string(),
-                    })?;
+                    }
+                })?;
 
                 let client = reqwest::Client::builder()
                     .timeout(Duration::from_secs(15))
@@ -115,9 +114,12 @@ impl Tool for BrowserTool {
                     .unwrap_or("unknown")
                     .to_string();
 
-                let body = response.text().await.map_err(|e| ToolError::ExecutionFailed {
-                    reason: format!("Failed to read page content: {}", e),
-                })?;
+                let body = response
+                    .text()
+                    .await
+                    .map_err(|e| ToolError::ExecutionFailed {
+                        reason: format!("Failed to read page content: {}", e),
+                    })?;
 
                 let content = html_to_text(&body);
 
@@ -128,10 +130,7 @@ impl Tool for BrowserTool {
                 }))
             }
             "get_content" => {
-                let url = input
-                    .get("url")
-                    .and_then(|u| u.as_str())
-                    .unwrap_or("");
+                let url = input.get("url").and_then(|u| u.as_str()).unwrap_or("");
 
                 let client = reqwest::Client::builder()
                     .timeout(Duration::from_secs(15))
@@ -149,9 +148,12 @@ impl Tool for BrowserTool {
                         reason: format!("Failed to fetch content: {}", e),
                     })?;
 
-                let body = response.text().await.map_err(|e| ToolError::ExecutionFailed {
-                    reason: format!("Failed to read response: {}", e),
-                })?;
+                let body = response
+                    .text()
+                    .await
+                    .map_err(|e| ToolError::ExecutionFailed {
+                        reason: format!("Failed to read response: {}", e),
+                    })?;
 
                 let content = html_to_text(&body);
 
@@ -160,13 +162,11 @@ impl Tool for BrowserTool {
                     "url": url
                 }))
             }
-            "screenshot" => {
-                Ok(json!({
-                    "content": "Screenshot functionality requires Playwright or similar browser automation. Install playwright for full browser support.",
-                    "url": input.get("url").and_then(|u| u.as_str()).unwrap_or(""),
-                    "note": "For full browser automation, install the 'playwright' crate"
-                }))
-            }
+            "screenshot" => Ok(json!({
+                "content": "Screenshot functionality requires Playwright or similar browser automation. Install playwright for full browser support.",
+                "url": input.get("url").and_then(|u| u.as_str()).unwrap_or(""),
+                "note": "For full browser automation, install the 'playwright' crate"
+            })),
             _ => Err(ToolError::InvalidInput {
                 reason: format!("Unknown browser action: {}", action),
             }),

@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::str::FromStr;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
@@ -19,13 +20,14 @@ pub enum MemoryMode {
     Persistent,
 }
 
-impl MemoryMode {
-    pub fn from_str(s: &str) -> Self {
+impl FromStr for MemoryMode {
+    type Err = AgentError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "shared" => MemoryMode::Shared,
-            "isolated" => MemoryMode::Isolated,
-            "persistent" => MemoryMode::Persistent,
-            _ => MemoryMode::Persistent,
+            "shared" => Ok(MemoryMode::Shared),
+            "isolated" => Ok(MemoryMode::Isolated),
+            _ => Ok(MemoryMode::Persistent),
         }
     }
 }
@@ -38,6 +40,7 @@ pub struct AgentPool {
     memory: Arc<MemoryHandle>,
     memory_mode: MemoryMode,
     next_worker: AtomicUsize,
+    #[allow(dead_code)]
     task_queue: VecDeque<(String, tokio::sync::oneshot::Sender<TaskResult>)>,
 }
 
@@ -76,7 +79,14 @@ impl AgentPool {
             goal, self.memory_mode
         );
 
-        execute_task(goal, llm.as_ref(), self.tools.as_ref(), self.memory.as_ref(), &config).await
+        execute_task(
+            goal,
+            llm.as_ref(),
+            self.tools.as_ref(),
+            self.memory.as_ref(),
+            &config,
+        )
+        .await
     }
 
     pub async fn map(&self, goals: Vec<String>) -> Vec<Result<TaskResult, AgentError>> {
@@ -129,15 +139,27 @@ mod tests {
 
     #[test]
     fn test_memory_mode_from_str() {
-        assert_eq!(MemoryMode::from_str("shared"), MemoryMode::Shared);
-        assert_eq!(MemoryMode::from_str("isolated"), MemoryMode::Isolated);
-        assert_eq!(MemoryMode::from_str("persistent"), MemoryMode::Persistent);
-        assert_eq!(MemoryMode::from_str("unknown"), MemoryMode::Persistent);
+        assert_eq!(MemoryMode::from_str("shared").unwrap(), MemoryMode::Shared);
+        assert_eq!(
+            MemoryMode::from_str("isolated").unwrap(),
+            MemoryMode::Isolated
+        );
+        assert_eq!(
+            MemoryMode::from_str("persistent").unwrap(),
+            MemoryMode::Persistent
+        );
+        assert_eq!(
+            MemoryMode::from_str("unknown").unwrap(),
+            MemoryMode::Persistent
+        );
     }
 
     #[test]
     fn test_memory_mode_case_insensitive() {
-        assert_eq!(MemoryMode::from_str("SHARED"), MemoryMode::Shared);
-        assert_eq!(MemoryMode::from_str("Isolated"), MemoryMode::Isolated);
+        assert_eq!(MemoryMode::from_str("SHARED").unwrap(), MemoryMode::Shared);
+        assert_eq!(
+            MemoryMode::from_str("Isolated").unwrap(),
+            MemoryMode::Isolated
+        );
     }
 }

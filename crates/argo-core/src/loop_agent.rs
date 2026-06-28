@@ -7,9 +7,7 @@ use crate::config::AgentConfig;
 use crate::error::AgentError;
 use crate::execution::execute_task;
 use crate::llm::{CompletionRequest, LlmProvider, Message, MessageContent, Role};
-use crate::message::{
-    AgentTrace, CriterionScore, QualityRubric, QualityScore, TaskResult,
-};
+use crate::message::{AgentTrace, CriterionScore, QualityRubric, QualityScore, TaskResult};
 use argo_memory::handle::MemoryHandle;
 use argo_tools::registry::ToolRegistry;
 
@@ -112,7 +110,11 @@ impl LoopAgent {
                         if score.meets_threshold || iteration >= max_iterations {
                             info!(
                                 "{} at iteration {} with score {:.2}",
-                                if score.meets_threshold { "Quality threshold met" } else { "Max iterations reached" },
+                                if score.meets_threshold {
+                                    "Quality threshold met"
+                                } else {
+                                    "Max iterations reached"
+                                },
                                 iteration,
                                 score.overall
                             );
@@ -193,10 +195,7 @@ impl LoopAgent {
             .rubric
             .criteria
             .iter()
-            .map(|c| format!(
-                "- {} (weight {:.2}): {}",
-                c.name, c.weight, c.description
-            ))
+            .map(|c| format!("- {} (weight {:.2}): {}", c.name, c.weight, c.description))
             .collect::<Vec<_>>()
             .join("\n");
 
@@ -215,9 +214,7 @@ impl LoopAgent {
                 role: Role::User,
                 content: MessageContent::Text(prompt),
             }],
-            system_prompt: Some(
-                "You are a quality evaluator. Return ONLY valid JSON.".to_string(),
-            ),
+            system_prompt: Some("You are a quality evaluator. Return ONLY valid JSON.".to_string()),
             temperature: Some(0.1),
             max_tokens: Some(1024),
             stop_sequences: None,
