@@ -37,10 +37,7 @@ impl PatternDetector {
 
     pub fn detect(&self, records: &[ErrorRecord]) -> Vec<DetectedPattern> {
         let cutoff = Utc::now() - Duration::hours(self.lookback_hours as i64);
-        let recent: Vec<&ErrorRecord> = records
-            .iter()
-            .filter(|r| r.timestamp >= cutoff)
-            .collect();
+        let recent: Vec<&ErrorRecord> = records.iter().filter(|r| r.timestamp >= cutoff).collect();
 
         let mut patterns = Vec::new();
 
@@ -93,10 +90,7 @@ impl PatternDetector {
         let mut tool_errors: HashMap<String, Vec<&ErrorRecord>> = HashMap::new();
         for record in records {
             if let Some(tool) = &record.tool_name {
-                tool_errors
-                    .entry(tool.clone())
-                    .or_default()
-                    .push(record);
+                tool_errors.entry(tool.clone()).or_default().push(record);
             }
         }
 
@@ -112,10 +106,7 @@ impl PatternDetector {
                         self.lookback_hours
                     ),
                     occurrences: failures.len(),
-                    error_types: failures
-                        .iter()
-                        .map(|r| r.error_type.clone())
-                        .collect(),
+                    error_types: failures.iter().map(|r| r.error_type.clone()).collect(),
                     tool_names: vec![tool_name.clone()],
                     time_range_hours: self.lookback_hours,
                     confidence: 0.8,

@@ -6,18 +6,10 @@ use super::pattern::{ErrorRecord, PatternDetector};
 use super::proposal::ProposalGenerator;
 use super::types::{GrowthReport, ImprovementProposal, ProposalRisk};
 
+#[derive(Default)]
 pub struct GrowthEngine {
     detector: PatternDetector,
     proposal_gen: ProposalGenerator,
-}
-
-impl Default for GrowthEngine {
-    fn default() -> Self {
-        Self {
-            detector: PatternDetector::default(),
-            proposal_gen: ProposalGenerator::default(),
-        }
-    }
 }
 
 impl GrowthEngine {
@@ -28,11 +20,7 @@ impl GrowthEngine {
         }
     }
 
-    pub async fn run_cycle(
-        &self,
-        agent_id: &str,
-        records: &[ErrorRecord],
-    ) -> GrowthReport {
+    pub async fn run_cycle(&self, agent_id: &str, records: &[ErrorRecord]) -> GrowthReport {
         let cycle_start = Utc::now();
         info!(
             agent_id = agent_id,

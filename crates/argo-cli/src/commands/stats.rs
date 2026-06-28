@@ -98,10 +98,7 @@ pub async fn execute(
         "│  Errors/task:     {:<37}│",
         format!("{:.1}", stats.errors_per_task)
     );
-    println!(
-        "│  Heal steps:      {:<37}│",
-        stats.total_heal_steps
-    );
+    println!("│  Heal steps:      {:<37}│", stats.total_heal_steps);
     println!("└─────────────────────────────────────────────────────────┘");
     println!();
 
@@ -190,10 +187,7 @@ async fn gather_stats(agent_name: &str, _duration: Duration) -> AgentStats {
         growth_reports: 0,
     };
 
-    tracing::debug!(
-        agent = agent_name,
-        "Gathering stats from memory stores"
-    );
+    tracing::debug!(agent = agent_name, "Gathering stats from memory stores");
 
     stats
 }

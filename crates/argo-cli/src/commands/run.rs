@@ -85,12 +85,12 @@ pub async fn execute(
                 tool_registry.register(Arc::new(argo_tools::python_tool::PythonTool::new()));
             }
             "web_search" => {
-                tool_registry.register(Arc::new(argo_tools::web_search::WebSearchTool::new(
-                    None,
-                )));
+                tool_registry.register(Arc::new(argo_tools::web_search::WebSearchTool::new(None)));
             }
             "browser" => {
-                tool_registry.register(Arc::new(argo_tools::browser::BrowserTool::default_headless()));
+                tool_registry.register(Arc::new(
+                    argo_tools::browser::BrowserTool::default_headless(),
+                ));
             }
             _ => {
                 eprintln!("Warning: unknown tool '{}', skipping", tool_name);

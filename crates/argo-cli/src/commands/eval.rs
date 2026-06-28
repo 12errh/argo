@@ -79,11 +79,7 @@ fn load_scenarios_from_dir(dir: &Path) -> anyhow::Result<Vec<EvalScenario>> {
     Ok(scenarios)
 }
 
-pub async fn execute(
-    scenario_path: &Path,
-    config_path: &Path,
-    format: &str,
-) -> anyhow::Result<()> {
+pub async fn execute(scenario_path: &Path, config_path: &Path, format: &str) -> anyhow::Result<()> {
     println!("╔══════════════════════════════════════════════════════════╗");
     println!("║           Argo Agent Evaluation                          ║");
     println!("╚══════════════════════════════════════════════════════════╝");
@@ -183,10 +179,7 @@ pub async fn execute(
     println!("│  Scenarios:  {:<41}│", report.total_scenarios);
     println!("│  Passed:     {:<41}│", report.passed);
     println!("│  Failed:     {:<41}│", report.failed);
-    println!(
-        "│  Avg score:  {:<41}│",
-        format!("{:.2}", report.avg_score)
-    );
+    println!("│  Avg score:  {:<41}│", format!("{:.2}", report.avg_score));
     println!("└─────────────────────────────────────────────────────────┘");
 
     if format == "json" {
@@ -198,10 +191,7 @@ pub async fn execute(
     Ok(())
 }
 
-async fn run_scenario(
-    scenario: &EvalScenario,
-    _config_path: &Path,
-) -> anyhow::Result<EvalResult> {
+async fn run_scenario(scenario: &EvalScenario, _config_path: &Path) -> anyhow::Result<EvalResult> {
     let start = std::time::Instant::now();
 
     tracing::info!(
