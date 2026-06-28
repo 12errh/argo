@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     CompletionRequest, CompletionResponse, LlmProvider, MessageContent, Role, StopReason,
-    TokenUsage,
+    TokenUsage, ToolCallRequest,
 };
 use crate::error::LlmError;
 
@@ -23,6 +23,22 @@ struct OpenAiRequest {
     max_tokens: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     temperature: Option<f32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tools: Option<Vec<OpenAiToolDef>>,
+}
+
+#[derive(Serialize)]
+struct OpenAiToolDef {
+    #[serde(rename = "type")]
+    tool_type: String,
+    function: OpenAiFunctionDef,
+}
+
+#[derive(Serialize)]
+struct OpenAiFunctionDef {
+    name: String,
+    description: String,
+    parameters: serde_json::Value,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -46,6 +62,19 @@ struct OpenAiChoice {
 #[derive(Deserialize)]
 struct OpenAiResponseMessage {
     content: Option<String>,
+    tool_calls: Option<Vec<OpenAiToolCall>>,
+}
+
+#[derive(Deserialize)]
+struct OpenAiToolCall {
+    id: String,
+    function: OpenAiToolCallFunction,
+}
+
+#[derive(Deserialize)]
+struct OpenAiToolCallFunction {
+    name: String,
+    arguments: String,
 }
 
 #[derive(Deserialize)]
@@ -99,11 +128,25 @@ impl LlmProvider for OpenAiProvider {
             });
         }
 
+        let openai_tools = request.tools.map(|defs| {
+            defs.into_iter()
+                .map(|d| OpenAiToolDef {
+                    tool_type: "function".to_string(),
+                    function: OpenAiFunctionDef {
+                        name: d.name,
+                        description: d.description,
+                        parameters: d.input_schema,
+                    },
+                })
+                .collect()
+        });
+
         let body = OpenAiRequest {
             model: self.model.clone(),
             messages,
             max_tokens: request.max_tokens,
             temperature: request.temperature,
+            tools: openai_tools,
         };
 
         let url = format!("{}/chat/completions", self.base_url);
@@ -154,6 +197,21 @@ impl LlmProvider for OpenAiProvider {
 
         let content = choice.message.content.unwrap_or_default();
 
+        let tool_calls = choice
+            .message
+            .tool_calls
+            .unwrap_or_default()
+            .into_iter()
+            .filter_map(|tc| {
+                let args: serde_json::Value = serde_json::from_str(&tc.function.arguments).ok()?;
+                Some(ToolCallRequest {
+                    id: tc.id,
+                    name: tc.function.name,
+                    input: args,
+                })
+            })
+            .collect();
+
         let stop_reason = match choice.finish_reason.as_deref() {
             Some("stop") => StopReason::EndTurn,
             Some("length") => StopReason::MaxTokens,
@@ -163,7 +221,7 @@ impl LlmProvider for OpenAiProvider {
 
         Ok(CompletionResponse {
             content,
-            tool_calls: Vec::new(),
+            tool_calls,
             usage: TokenUsage {
                 input_tokens: openai_response.usage.prompt_tokens,
                 output_tokens: openai_response.usage.completion_tokens,

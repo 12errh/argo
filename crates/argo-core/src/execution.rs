@@ -57,7 +57,7 @@ pub async fn execute_task(
         .map(|info| ToolDefinition {
             name: info.name.clone(),
             description: info.description.clone(),
-            input_schema: serde_json::json!({}),
+            input_schema: info.input_schema.clone(),
         })
         .collect();
 

@@ -7,6 +7,7 @@ use crate::trait_def::Tool;
 pub struct ToolInfo {
     pub name: String,
     pub description: String,
+    pub input_schema: serde_json::Value,
     pub version: semver::Version,
 }
 
@@ -76,6 +77,7 @@ impl ToolRegistry {
             .map(|(name, tool)| ToolInfo {
                 name: name.clone(),
                 description: tool.description().to_string(),
+                input_schema: tool.input_schema(),
                 version: self
                     .versions
                     .get(name)

@@ -20,6 +20,15 @@ struct AnthropicRequest {
     max_tokens: usize,
     system: Option<String>,
     messages: Vec<AnthropicMessage>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tools: Option<Vec<AnthropicToolDef>>,
+}
+
+#[derive(Serialize)]
+struct AnthropicToolDef {
+    name: String,
+    description: String,
+    input_schema: serde_json::Value,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -84,11 +93,22 @@ impl LlmProvider for AnthropicProvider {
             })
             .collect();
 
+        let anthropic_tools = request.tools.map(|defs| {
+            defs.into_iter()
+                .map(|d| AnthropicToolDef {
+                    name: d.name,
+                    description: d.description,
+                    input_schema: d.input_schema,
+                })
+                .collect()
+        });
+
         let body = AnthropicRequest {
             model: self.model.clone(),
             max_tokens: request.max_tokens.unwrap_or(8192),
             system: request.system_prompt,
             messages,
+            tools: anthropic_tools,
         };
 
         let response = self

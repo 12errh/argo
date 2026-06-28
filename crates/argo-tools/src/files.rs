@@ -28,13 +28,19 @@ impl FilesTool {
     }
 
     fn is_path_allowed(&self, path: &Path) -> bool {
-        let canonical = match path.canonicalize() {
+        let target = match path.canonicalize() {
             Ok(p) => p,
-            Err(_) => return false,
+            Err(_) => {
+                // File doesn't exist yet, check parent directory
+                match path.parent().and_then(|p| p.canonicalize().ok()) {
+                    Some(parent) => parent.join(path.file_name().unwrap_or_default()),
+                    None => return false,
+                }
+            }
         };
         self.allowed_paths.iter().any(|allowed| {
             if let Ok(allowed_canonical) = Path::new(allowed).canonicalize() {
-                canonical.starts_with(&allowed_canonical)
+                target.starts_with(&allowed_canonical)
             } else {
                 false
             }
