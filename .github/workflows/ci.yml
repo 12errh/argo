@@ -12,33 +12,35 @@ env:
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
 jobs:
-  check:
-    name: Check
+  fmt:
+    name: Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+          components: rustfmt
       - run: cargo fmt --all -- --check
-      - run: cargo clippy --all-targets --all-features
 
-  test:
-    name: Test
+  clippy:
+    name: Clippy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
       - uses: Swatinem/rust-cache@v2
       - name: Install Python dev headers
         run: sudo apt-get update && sudo apt-get install -y python3-dev
-      - run: cargo test --all
+      - run: cargo clippy --all-targets --all-features
 
-  build-matrix:
-    name: Build (${{ matrix.os }})
+  test:
+    name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    needs: [fmt, clippy]
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
@@ -48,4 +50,62 @@ jobs:
       - name: Install Python dev headers (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y python3-dev
-      - run: cargo build --all
+      - name: Install Python dev headers (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install python@3.12
+      - run: cargo test --all
+
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    needs: [test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: tar.gz
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            archive: tar.gz
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: tar.gz
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            archive: zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Install Python dev headers (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y python3-dev
+      - name: Install Python dev headers (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install python@3.12
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }} -p argo-cli
+      - name: Package (unix)
+        if: matrix.archive == 'tar.gz'
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czf ../../../argo-${{ matrix.target }}.tar.gz argo
+          cd ../../..
+      - name: Package (windows)
+        if: matrix.archive == 'zip'
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          7z a ../../../argo-${{ matrix.target }}.zip argo.exe
+          cd ../../..
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: argo-${{ matrix.target }}
+          path: argo-${{ matrix.target }}.${{ matrix.archive }}

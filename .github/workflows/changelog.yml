@@ -1,0 +1,81 @@
+name: Changelog
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | head -2 | tail -1)
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREV_TAG"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+          PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
+          
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "## ${CURRENT_TAG}" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          
+          if [ "$PREV_TAG" != "" ]; then
+            echo "### What's Changed" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            # Features
+            FEATURES=$(git log ${PREV_TAG}..${CURRENT_TAG} --pretty=format:"- %s" --grep="^feat" 2>/dev/null || true)
+            if [ -n "$FEATURES" ]; then
+              echo "#### Features" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+              echo "$FEATURES" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+            
+            # Bug Fixes
+            FIXES=$(git log ${PREV_TAG}..${CURRENT_TAG} --pretty=format:"- %s" --grep="^fix" 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "#### Bug Fixes" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+              echo "$FIXES" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+            
+            # Other changes
+            OTHERS=$(git log ${PREV_TAG}..${CURRENT_TAG} --pretty=format:"- %s" --grep="^feat" --invert-grep --grep="^fix" --invert-grep 2>/dev/null || true)
+            if [ -n "$OTHERS" ]; then
+              echo "#### Other Changes" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+              echo "$OTHERS" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+          else
+            echo "Initial release" >> CHANGELOG.md
+          fi
+          
+          echo "" >> CHANGELOG.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURRENT_TAG}" >> CHANGELOG.md
+
+      - name: Commit changelog
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "docs: update CHANGELOG.md for ${GITHUB_REF#refs/tags/}"
+          git push
