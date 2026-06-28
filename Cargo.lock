@@ -304,13 +304,16 @@ name = "argo-mcp"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "argo-tools",
  "async-trait",
+ "chrono",
  "reqwest",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

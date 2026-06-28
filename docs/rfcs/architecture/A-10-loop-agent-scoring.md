@@ -1,6 +1,6 @@
 # A-10: Loop Agent & Scoring
 
-**Status:** Proposed
+**Status:** Implemented
 **Author:** Argo Core Team
 **Created:** 2026-06-27
 

@@ -1,9 +1,9 @@
 # Argo Agent Framework — Master Plan & Complete Specification
 
-**Version:** 0.1.0-planning  
-**Status:** Pre-development  
+**Version:** 0.1.0  
+**Status:** Phase 4 Complete — Phase 5 In Progress  
 **License:** Apache 2.0  
-**Repository:** github.com/argo-agents/argo  
+**Repository:** github.com/12errh/argo  
 
 ---
 
@@ -1391,15 +1391,15 @@ For local development:
 
 **Deliverable:** Developers can use Argo from Python, TypeScript, and Rust with identical features.
 
-### Phase 4 — Multi-Agent + MCP (6 weeks)
+### Phase 4 — Multi-Agent + MCP (Completed)
 
-- [ ] `argo-core`: orchestrator actor
-- [ ] `argo-core`: agent spawning from within agents
-- [ ] `argo-core`: AgentPool
-- [ ] `argo-core`: LoopAgent with self-scoring
-- [ ] `argo-mcp`: full MCP protocol connector
-- [ ] `argo-mcp`: MCP tool auto-discovery
-- [ ] `argo-tools`: web_search, browser (Playwright), git, python, code
+- [x] `argo-core`: orchestrator actor
+- [x] `argo-core`: agent spawning from within agents
+- [x] `argo-core`: AgentPool
+- [x] `argo-core`: LoopAgent with self-scoring
+- [x] `argo-mcp`: full MCP protocol connector
+- [x] `argo-mcp`: MCP tool auto-discovery
+- [x] `argo-tools`: web_search, browser, git, python, code
 
 **Deliverable:** Multi-agent pipelines work. Any MCP server's tools are available to agents.
 

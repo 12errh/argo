@@ -1,7 +1,7 @@
 # Argo Agent Framework — Detailed Implementation Plan
 
 **Version:** 0.1.0  
-**Status:** Pre-development  
+**Status:** Phase 4 Complete — Phase 5 In Progress  
 **Based on:** argo-master-plan.md  
 **Total Duration Estimate:** 38–44 weeks  
 
@@ -395,6 +395,7 @@ argo (meta-crate, re-exports all)
 ## 6. Phase 4 — Multi-Agent & MCP
 
 **Duration:** 6 weeks  
+**Status:** Completed  
 **Goal:** Multi-agent pipelines work. Any MCP server's tools are available to agents.
 
 ### 6.1 Tasks

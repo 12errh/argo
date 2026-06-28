@@ -47,12 +47,20 @@
 - [x] TypeScript SDK via napi-rs (argo-napi crate with Agent, LoopAgent, AgentPool classes)
 - [x] Feature parity test suite (92 tests passing across workspace)
 
-### Phase 4 — Multi-Agent & MCP (6 weeks)
-- Orchestrator actor
-- AgentPool with task distribution
-- LoopAgent with self-scoring
-- Full MCP protocol connector
-- Additional tools (web, browser, git, python, code)
+### Phase 4 — Multi-Agent & MCP (Completed)
+**Duration:** 6 weeks
+
+- [x] OrchestratorActor with LLM-based task decomposition
+- [x] Agent spawning from within running agents
+- [x] AgentPool with round-robin task distribution
+- [x] MemoryMode (Shared/Isolated/Persistent)
+- [x] LoopAgent with self-scoring via QualityRubric
+- [x] Full MCP protocol connector (HTTP JSON-RPC)
+- [x] MCP tool discovery and invocation
+- [x] MCP auth (Bearer + OAuth2)
+- [x] MCP reconnection with exponential backoff
+- [x] Web search, browser, git, python, code tools
+- [x] 47 unit tests passing across workspace
 
 ### Phase 5 — Evolution & Production Polish (6 weeks)
 - Daily growth cycle

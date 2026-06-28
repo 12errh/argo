@@ -4,14 +4,69 @@ use crate::error::MemoryError;
 use crate::redis::{RedisMemory, StoredTurn};
 use crate::surreal::{Entity, SurrealMemory, TaskRecord};
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum MemoryMode {
+    Shared,
+    Isolated,
+    Persistent,
+}
+
+impl MemoryMode {
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "shared" => MemoryMode::Shared,
+            "isolated" => MemoryMode::Isolated,
+            _ => MemoryMode::Persistent,
+        }
+    }
+}
+
 pub struct MemoryHandle {
     pub redis: RedisMemory,
     pub surreal: SurrealMemory,
+    pub mode: MemoryMode,
+    pub agent_id: Option<String>,
 }
 
 impl MemoryHandle {
     pub fn new(redis: RedisMemory, surreal: SurrealMemory) -> Self {
-        Self { redis, surreal }
+        Self {
+            redis,
+            surreal,
+            mode: MemoryMode::Persistent,
+            agent_id: None,
+        }
+    }
+
+    pub fn with_mode(redis: RedisMemory, surreal: SurrealMemory, mode: MemoryMode, agent_id: &str) -> Self {
+        Self {
+            redis,
+            surreal,
+            mode,
+            agent_id: Some(agent_id.to_string()),
+        }
+    }
+
+    pub fn shared(redis: RedisMemory, surreal: SurrealMemory) -> Self {
+        Self::with_mode(redis, surreal, MemoryMode::Shared, "shared")
+    }
+
+    pub fn isolated(redis: RedisMemory, surreal: SurrealMemory, agent_id: &str) -> Self {
+        Self::with_mode(redis, surreal, MemoryMode::Isolated, agent_id)
+    }
+
+    pub fn persistent(redis: RedisMemory, surreal: SurrealMemory, agent_id: &str) -> Self {
+        Self::with_mode(redis, surreal, MemoryMode::Persistent, agent_id)
+    }
+
+    pub fn effective_agent_id(&self, caller_agent_id: &str) -> String {
+        match self.mode {
+            MemoryMode::Shared => "shared".to_string(),
+            MemoryMode::Isolated => caller_agent_id.to_string(),
+            MemoryMode::Persistent => {
+                self.agent_id.clone().unwrap_or_else(|| caller_agent_id.to_string())
+            }
+        }
     }
 
     pub async fn store_context(

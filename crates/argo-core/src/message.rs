@@ -4,6 +4,86 @@ use uuid::Uuid;
 
 use crate::error::AgentError;
 
+// ─── Phase 4: Multi-Agent Protocol Messages ─────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AssignTask {
+    pub task_id: Uuid,
+    pub goal: String,
+    pub context: Option<String>,
+    pub deadline: Option<chrono::DateTime<chrono::Utc>>,
+    pub parent_task_id: Option<Uuid>,
+}
+
+impl Message for AssignTask {
+    type Result = TaskResult;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaskComplete {
+    pub task_id: Uuid,
+    pub agent_id: String,
+    pub result: TaskResult,
+    pub duration_ms: u64,
+    pub tools_used: Vec<String>,
+}
+
+impl Message for TaskComplete {
+    type Result = ();
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TaskFailed {
+    pub task_id: Uuid,
+    pub agent_id: String,
+    pub error: AgentError,
+}
+
+impl Message for TaskFailed {
+    type Result = ();
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SpawnWorker {
+    pub agent_id: String,
+    pub goal: String,
+    pub config: Option<serde_json::Value>,
+}
+
+impl Message for SpawnWorker {
+    type Result = Result<String, AgentError>;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QualityRubric {
+    pub criteria: Vec<QualityCriterion>,
+    pub threshold: f32,
+    pub max_iterations: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QualityCriterion {
+    pub name: String,
+    pub weight: f32,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QualityScore {
+    pub overall: f32,
+    pub criteria_scores: Vec<CriterionScore>,
+    pub meets_threshold: bool,
+    pub iteration: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CriterionScore {
+    pub name: String,
+    pub weight: f32,
+    pub score: f32,
+    pub feedback: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExecuteTask {
     pub task_id: Uuid,
